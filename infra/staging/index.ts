@@ -91,9 +91,6 @@ const s3Distribution = new aws.cloudfront.Distribution("s3Distribution", {
     origins: [{
         domainName: staticAssetsBucket.bucketRegionalDomainName,
         originId: s3OriginId,
-        s3OriginConfig: {
-            originAccessIdentity: "origin-access-identity/cloudfront/ABCDEFG1234567",
-        },
     }],
     enabled: true,
     isIpv6Enabled: true,
