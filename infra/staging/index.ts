@@ -649,7 +649,7 @@ let environment = [
     },
     {
         name: "STATIC_HOST",
-        value: bucketWebURL
+        value: s3Distribution.domainName
     },
     {
         name: "STATIC_URL",
