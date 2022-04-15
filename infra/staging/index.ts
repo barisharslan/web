@@ -152,8 +152,7 @@ const s3Distribution = new aws.cloudfront.Distribution("s3Distribution", {
     priceClass: "PriceClass_200",
     restrictions: {
         geoRestriction: {
-            restrictionType: "blacklist",
-            locations: [],
+            restrictionType: "none",
         },
     },
     tags: {
