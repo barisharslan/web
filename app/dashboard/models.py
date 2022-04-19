@@ -306,6 +306,12 @@ class Bounty(SuperModel):
         ('manual', 'Manual')
     )
 
+
+    BOUNTY_SOURCES = (
+        ('github', 'Github'),
+        ('custom', 'Custom'),
+    )
+
     bounty_state = models.CharField(max_length=50, choices=BOUNTY_STATES, default='open', db_index=True)
     web3_type = models.CharField(max_length=50, choices=WEB3_TYPES, default='bounties_network')
     title = models.CharField(max_length=1000)
@@ -418,16 +424,17 @@ class Bounty(SuperModel):
     # contact details shall be an array of structures like:
     #   {type: 'discord', value: 'dhandle'}, {type: 'telegram',value: '@thandle'}]
     contact_details = JSONField(default=dict, blank=True, null=True)
+    bounty_source = models.CharField(max_length=50, choices=BOUNTY_SOURCES, default='github', db_index=True)
 
     # The following fields are for custom bounties (bounties not imported from github)
     # custom bounty: Text only from the Rich Text editor
-    custom_title = models.CharField(max_length=200, default='', blank=True, null=True, help_text=_('The title of the Bounty'))
+    # custom_title = models.CharField(max_length=200, default='', blank=True, null=True, help_text=_('The title of the Bounty'))
 
     # Text only from the Rich Text editor
-    custom_description = models.TextField(default='', blank=True, null=True, help_text=_('The description of the Bounty'))
+    # custom_description = models.TextField(default='', blank=True, null=True, help_text=_('The description of the Bounty'))
 
     # Complete content from the Rich Text editor
-    custom_description_rich = models.TextField(default='', blank=True, null=True, help_text=_('HTML rich description'))
+    # custom_description_rich = models.TextField(default='', blank=True, null=True, help_text=_('HTML rich description'))
 
     # acceptance criteria
     acceptance_criteria = models.TextField(default='', blank=True, null=True, help_text=_('Acceptance criteria'))
@@ -546,13 +553,15 @@ class Bounty(SuperModel):
             str: The relative URL for the Bounty.
 
         """
-        try:
-            _org_name = org_name(self.github_url)
-            _issue_num = int(issue_number(self.github_url))
-            _repo_name = repo_name(self.github_url)
-            return f"{'/' if preceding_slash else ''}issue/{_org_name}/{_repo_name}/{_issue_num}/{self.standard_bounties_id}"
-        except Exception:
-            return f"{'/' if preceding_slash else ''}funding/details?url={self.github_url}"
+        return f"{'/' if preceding_slash else ''}issue/{self.id}"
+        # TODO geri: drop the URLs creation from below 
+        # try:
+        #     _org_name = org_name(self.github_url)
+        #     _issue_num = int(issue_number(self.github_url))
+        #     _repo_name = repo_name(self.github_url)
+        #     return f"{'/' if preceding_slash else ''}issue/{_org_name}/{_repo_name}/{_issue_num}/{self.standard_bounties_id}"
+        # except Exception:
+        #     return f"{'/' if preceding_slash else ''}funding/details?url={self.github_url}"
 
     def get_canonical_url(self):
         """Get the canonical URL of the Bounty for SEO purposes.
@@ -561,10 +570,12 @@ class Bounty(SuperModel):
             str: The canonical URL of the Bounty.
 
         """
-        _org_name = org_name(self.github_url)
-        _repo_name = repo_name(self.github_url)
-        _issue_num = int(issue_number(self.github_url))
-        return settings.BASE_URL.rstrip('/') + reverse('issue_details_new2', kwargs={'ghuser': _org_name, 'ghrepo': _repo_name, 'ghissue': _issue_num})
+        # TODO geri: drop this
+        # _org_name = org_name(self.github_url)
+        # _repo_name = repo_name(self.github_url)
+        # _issue_num = int(issue_number(self.github_url))
+        # return settings.BASE_URL.rstrip('/') + reverse('issue_details_new2', kwargs={'ghuser': _org_name, 'ghrepo': _repo_name, 'ghissue': _issue_num})
+        return settings.BASE_URL.rstrip('/') + reverse('issue_details_new4', kwargs={'bounty_id': self.id})
 
     def get_natural_value(self):
         if not self.value_in_token:

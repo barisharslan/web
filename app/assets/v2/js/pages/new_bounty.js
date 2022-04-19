@@ -310,7 +310,7 @@ Vue.mixin({
       if (vm.step2Submitted) {
         if (!vm.form.bountyInformationSource) {
           ret['bountyInformationSource'] = 'Select the bounty information source';
-        } else if (vm.form.bountyInformationSource === '0') {
+        } else if (vm.form.bountyInformationSource === 'github') {
           if (!vm.form.issueDetails || vm.form.issueDetails < 1) {
             ret['issueDetails'] = 'Please input a GitHub issue';
           }
@@ -849,7 +849,8 @@ Vue.mixin({
         'acceptance_criteria': vm.form.acceptanceCriteria,
         'resources': vm.form.resources,
         'contact_details': JSON.stringify(vm.form.contactDetails),
-        'organisation_url': vm.form.organisationUrl
+        'organisation_url': vm.form.organisationUrl,
+        'bounty_source': vm.form.bountyInformationSource,
       };
 
       console.log('geri - submitForm 4');

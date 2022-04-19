@@ -14,25 +14,25 @@ Vue.mixin({
   methods: {
     fetchBounty: function(newData) {
       let vm = this;
-      let apiUrlBounty = `/actions/api/v0.1/bounty?github_url=${document.issueURL}`;
+      let apiUrlBounty = document.bountyID ? `/actions/api/v0.1/bounty/${document.bountyID}` : `/actions/api/v0.1/bounty?github_url=${document.issueURL}`;
       const getBounty = fetchData(apiUrlBounty, 'GET');
 
       $.when(getBounty).then(function(response) {
-        if (!response.length) {
+        if (!document.bountyID && !response.length) {
           vm.loadingState = 'empty';
           return vm.syncBounty();
         }
-        vm.bounty = response[0];
+        vm.bounty = document.bountyID ? response : response[0];
         vm.loadingState = 'resolved';
-        vm.isOwner = vm.checkOwner(response[0].bounty_owner_github_username);
-        vm.isOwnerAddress = vm.checkOwnerAddress(response[0].bounty_owner_address);
-        document.result = response[0];
+        vm.isOwner = vm.checkOwner(vm.bounty.bounty_owner_github_username);
+        vm.isOwnerAddress = vm.checkOwnerAddress(vm.bounty.bounty_owner_address);
+        document.result = vm.bounty;
         if (newData) {
           delete sessionStorage['fulfillers'];
           delete sessionStorage['bountyId'];
           localStorage[document.issueURL] = '';
-          document.title = `${response[0].title} | Gitcoin`;
-          window.history.replaceState({}, `${response[0].title} | Gitcoin`, response[0].url);
+          document.title = `${vm.bounty.title} | Gitcoin`;
+          window.history.replaceState({}, `${vm.bounty.title} | Gitcoin`, vm.bounty.url);
         }
         if (vm.bounty.event && localStorage['pendingProject'] && (vm.bounty.standard_bounties_id == localStorage['pendingProject'])) {
           projectModal(vm.bounty.pk);

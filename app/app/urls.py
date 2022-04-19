@@ -443,6 +443,7 @@ urlpatterns = [
     ),
 
     # View Bounty
+    # TODO geri: should we drop the 2 URL patterns below???
     url(
         r'^issue/(?P<ghuser>.*)/(?P<ghrepo>.*)/(?P<ghissue>.*)/(?P<stdbounties_id>.*)',
         dashboard.views.bounty_details,
@@ -454,6 +455,7 @@ urlpatterns = [
         name='issue_details_new2'
     ),
     re_path(r'^funding/details/?', dashboard.views.bounty_details, name='funding_details'),
+    re_path(r'^issue/(?P<bounty_id>\d+)', dashboard.views.bounty_details, name='issue_details_new4'),
     re_path(r'^issue/(?P<invitecode>.*)', dashboard.views.bounty_invite_url, name='unique_bounty_invite'),
 
     # Tips

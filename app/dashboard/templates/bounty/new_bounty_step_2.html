@@ -9,16 +9,16 @@
         <label class="mb-1 font-subheader font-weight-normal letter-spacing">Bounty information</label>
         <div class="btn-group-toggle d-flex flex-column flex-lg-row flex-wrap pt-1">
           <label
-            v-bind:class="'btn btn-radio text-left chain-btn mr-2 mb-2 py-2 px-2 bounty-information-label ' + ((form.bountyInformationSource == 0)?'active':'')">
-            <input type="radio" name="bounty_information" value="0" v-model="form.bountyInformationSource">
+            v-bind:class="'btn btn-radio text-left chain-btn mr-2 mb-2 py-2 px-2 bounty-information-label ' + ((form.bountyInformationSource === 'github')?'active':'')">
+            <input type="radio" name="bounty_information" value="github" v-model="form.bountyInformationSource">
             <div class="p-1">
               <p class="m-0 text-grey-500 font-subheader">Import from GitHub</p>
               <p class="m-0 text-grey-400 mt-1">Import details from a GitHub issue</p>
             </div>
           </label>
           <label
-            v-bind:class="'btn btn-radio text-left chain-btn mr-2 mb-2 py-2 px-2 bounty-information-label ' + ((form.bountyInformationSource == 1)?'active':'')">
-            <input type="radio" name="bounty_information" value="1" v-model="form.bountyInformationSource">
+            v-bind:class="'btn btn-radio text-left chain-btn mr-2 mb-2 py-2 px-2 bounty-information-label ' + ((form.bountyInformationSource === 'custom')?'active':'')">
+            <input type="radio" name="bounty_information" value="custom" v-model="form.bountyInformationSource">
             <div class="p-1">
               <p class="m-0 text-grey-500 font-subheader">Create Custom Bounty</p>
               <p class="m-0 text-grey-400 mt-1">Create a new bounty from scratch</p>
@@ -32,7 +32,7 @@
     </div>
   </div>
 
-  <div class="row ml-0" v-if="form.bountyInformationSource === '0'">
+  <div class="row ml-0" v-if="form.bountyInformationSource === 'github'">
     <div class="new-border-mid col-9 pb-4">
       <div class="pl-0">
         <!-- GitHub Issue Url -->
@@ -47,7 +47,7 @@
     </div>
   </div>
 
-  <div class="row ml-0" v-if="form.bountyInformationSource === '0' && form.issueDetails">
+  <div class="row ml-0" v-if="form.bountyInformationSource === 'github' && form.issueDetails">
     <div class="new-border-mid col-9 pb-4">
       <!-- GitHub Issue Title -->
       <label class="mb-1 font-subheader font-weight-normal letter-spacing">Title</label>
@@ -55,7 +55,7 @@
     </div>
   </div>
 
-  <div class="row ml-0" v-if="form.bountyInformationSource === '0' && form.issueDetails">
+  <div class="row ml-0" v-if="form.bountyInformationSource === 'github' && form.issueDetails">
     <div class="new-border-mid col-9 pb-4">
       <!-- GitHub Issue Details -->
       <label class="mb-1 font-subheader font-weight-normal letter-spacing">Description</label>
@@ -72,7 +72,7 @@
     </div>
   </div>
 
-  <div v-if="form.bountyInformationSource === '1'" class="row ml-0">
+  <div v-if="form.bountyInformationSource === 'custom'" class="row ml-0">
     <!-- Custom Bounty Title -->
     <div class="new-border-mid col-9 pb-4">
       <label class="mb-1 font-subheader font-weight-normal letter-spacing">Title</label>
@@ -83,7 +83,7 @@
     </div>
   </div>
 
-  <div class="row ml-0" v-if="form.bountyInformationSource === '1'">
+  <div class="row ml-0" v-if="form.bountyInformationSource === 'custom'">
     <div class="new-border-mid col-9">
       <!-- Custom Bounty Details Editor -->
       <div class="pl-0 col-9">
@@ -92,7 +92,7 @@
     </div>
   </div>
 
-  <div class="row ml-0" v-if="form.bountyInformationSource === '1'">
+  <div class="row ml-0" v-if="form.bountyInformationSource === 'custom'">
     <!-- Custom Bounty Details Editor -->
     <div class="new-border-mid col-9 pb-4">
       <quill-editor id="new-bounty-custom-editor" @change="quilUpdated($event)"

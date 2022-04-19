@@ -1945,13 +1945,14 @@ def bounty_invite_url(request, invitecode):
             bounty_invite.bounty.add(bounty)
             bounty_invite.inviter.add(inviter)
             bounty_invite.invitee.add(request.user)
+            # TODO: geri, this URL will not work custom bounties
         return redirect('/funding/details/?url=' + bounty.github_url)
     except Exception as e:
         logger.debug(e)
         raise Http404
 
 
-def bounty_details(request, ghuser='', ghrepo='', ghissue=0, stdbounties_id=None):
+def bounty_details(request, ghuser=None, ghrepo=None, ghissue=None, stdbounties_id=None, bounty_id=None):
     """Display the bounty details.
 
     Args:
@@ -1974,8 +1975,14 @@ def bounty_details(request, ghuser='', ghrepo='', ghissue=0, stdbounties_id=None
     else:
         _access_token = request.session.get('access_token')
 
+    logger.error("geri: bounty_id: " + str(bounty_id))
     try:
-        if ghissue:
+        if bounty_id:
+            # The bounties should be referenced by their ID, as they do not always need to be source on github
+            bounties = Bounty.objects.current().filter(pk=bounty_id)
+            issue_url = None
+        elif ghissue:
+            # Fallback for using old URL types to access bounties
             issue_url = 'https://github.com/' + ghuser + '/' + ghrepo + '/issues/' + ghissue
             bounties = Bounty.objects.current().filter(github_url=issue_url.lower())
             if not bounties.exists():
@@ -1990,6 +1997,7 @@ def bounty_details(request, ghuser='', ghrepo='', ghissue=0, stdbounties_id=None
 
     params = {
         'issueURL': issue_url,
+        'bounty_id': bounty_id if bounty_id else 'null',
         'title': _('Issue Details'),
         'card_title': _('Funded Issue Details | Gitcoin'),
         'avatar_url': static('v2/images/helmet.png'),
@@ -2003,7 +2011,8 @@ def bounty_details(request, ghuser='', ghrepo='', ghissue=0, stdbounties_id=None
 
     bounty = None
 
-    if issue_url:
+    # issue_url will be None for custom bounties
+    if issue_url or bounty_id:
         try:
             if stdbounties_id is not None and stdbounties_id == "0":
                 new_id = Bounty.objects.current().filter(github_url__iexact=issue_url).first().standard_bounties_id
@@ -2058,7 +2067,7 @@ def bounty_details(request, ghuser='', ghrepo='', ghissue=0, stdbounties_id=None
 
     if request.GET.get('sb') == '1' or (bounty and bounty.is_bounties_network):
         return TemplateResponse(request, 'bounty/details.html', params)
-
+        
     params['PYPL_CLIENT_ID'] = settings.PYPL_CLIENT_ID
     return TemplateResponse(request, 'bounty/details2.html', params)
 
@@ -6059,12 +6068,14 @@ def create_bounty_v1(request):
         return JsonResponse(response)
 
     github_url = request.POST.get("github_url", None)
-    if Bounty.objects.filter(github_url=github_url, network=network).exists():
-        response = {
-            'status': 303,
-            'message': 'bounty already exists for this github issue'
-        }
-        return JsonResponse(response)
+    bounty_source = request.POST.get("bounty_source", None)
+    if bounty_source == 'github':
+        if Bounty.objects.filter(github_url=github_url, network=network).exists():
+            response = {
+                'status': 303,
+                'message': 'bounty already exists for this github issue'
+            }
+            return JsonResponse(response)
 
     bounty = Bounty()
 
@@ -6104,6 +6115,7 @@ def create_bounty_v1(request):
     bounty.value_true = request.POST.get("amount", 0)
     bounty.bounty_owner_address = request.POST.get("bounty_owner_address", 0)
 
+    bounty.bounty_source = bounty_source
     bounty.acceptance_criteria = request.POST.get("acceptance_criteria", "")
     bounty.resources = request.POST.get("resources", "")
     
