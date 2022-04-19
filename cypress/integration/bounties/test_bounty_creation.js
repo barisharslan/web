@@ -436,7 +436,7 @@ describe('Creating a new bounty', { tags: ['bounties'] }, () => {
     /*
      * Screen 1 - Other Bounty
      */
-    it('Should validated the mandatory fields on screen when "Other" biounty type is selected 1 ', () => {
+    it('Should validated the mandatory fields on screen when "Other" bounty type is selected 1 ', () => {
       cy.visit('bounty/new');
       cy.wait(1000);
 
