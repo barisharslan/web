@@ -850,7 +850,7 @@ Vue.mixin({
         'resources': vm.form.resources,
         'contact_details': JSON.stringify(vm.form.contactDetails),
         'organisation_url': vm.form.organisationUrl,
-        'bounty_source': vm.form.bountyInformationSource,
+        'bounty_source': vm.form.bountyInformationSource
       };
 
       console.log('geri - submitForm 4');
