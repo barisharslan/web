@@ -235,10 +235,17 @@ class Bounty(SuperModel):
     ]
     BOUNTY_TYPES = [
         ('Bug', 'Bug'),
-        ('Security', 'Security'),
+        ('Project', 'Project'),
         ('Feature', 'Feature'),
+        ('Security', 'Security'),
+        ('Improvement', 'Improvement'),
+        ('Design', 'Design'),
+        ('Docs', 'Docs'),
+        ('Code review', 'Code review'),
+        ('Other', 'Other'),
         ('Unknown', 'Unknown'),
     ]
+
     EXPERIENCE_LEVELS = [
         ('Beginner', 'Beginner'),
         ('Intermediate', 'Intermediate'),
@@ -404,6 +411,29 @@ class Bounty(SuperModel):
 
     # Bounty QuerySet Manager
     objects = BountyQuerySet.as_manager()
+
+    # Aray of strings, for example: ["HTMK", "CSS"]
+    # tags = JSONField(default=list, blank=True) TODO geri we do not need this, tags are the categories
+
+    # contact details shall be an array of structures like:
+    #   {type: 'discord', value: 'dhandle'}, {type: 'telegram',value: '@thandle'}]
+    contact_details = JSONField(default=dict, blank=True, null=True)
+
+    # The following fields are for custom bounties (bounties not imported from github)
+    # custom bounty: Text only from the Rich Text editor
+    custom_title = models.CharField(max_length=200, default='', blank=True, null=True, help_text=_('The title of the Bounty'))
+
+    # Text only from the Rich Text editor
+    custom_description = models.TextField(default='', blank=True, null=True, help_text=_('The description of the Bounty'))
+
+    # Complete content from the Rich Text editor
+    custom_description_rich = models.TextField(default='', blank=True, null=True, help_text=_('HTML rich description'))
+
+    # acceptance criteria
+    acceptance_criteria = models.TextField(default='', blank=True, null=True, help_text=_('Acceptance criteria'))
+
+    # resources
+    resources = models.TextField(default='', blank=True, null=True, help_text=_('Resources'))
 
     class Meta:
         """Define metadata associated with Bounty."""

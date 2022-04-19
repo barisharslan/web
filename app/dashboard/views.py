@@ -32,6 +32,7 @@ import uuid
 from copy import deepcopy
 from datetime import datetime, timedelta
 from decimal import Decimal
+from pprint import pformat
 
 from django.conf import settings
 from django.contrib import messages
@@ -6038,6 +6039,11 @@ def create_bounty_v1(request):
     user = request.user if request.user.is_authenticated else None
     network = request.POST.get("network", 'mainnet')
 
+    # TODO geri
+    logger.error("*" * 80)
+    logger.error("request: %s", pformat(dict(request.META)))
+    logger.error("*" * 80)
+
     if not user:
         response['message'] = 'error: user needs to be authenticated to create bounty'
         return JsonResponse(response)
@@ -6098,6 +6104,13 @@ def create_bounty_v1(request):
     bounty.value_true = request.POST.get("amount", 0)
     bounty.bounty_owner_address = request.POST.get("bounty_owner_address", 0)
 
+    bounty.acceptance_criteria = request.POST.get("acceptance_criteria", "")
+    bounty.resources = request.POST.get("resources", "")
+    
+    contact_details = request.POST.get("contact_details", "")
+    if contact_details:
+        bounty.contact_details = json.loads(contact_details)
+
     current_time = timezone.now()
 
     bounty.web3_created = current_time
@@ -6120,11 +6133,12 @@ def create_bounty_v1(request):
     )
 
     # bounty github data
-    try:
-        kwargs = get_url_dict(bounty.github_url)
-        bounty.github_issue_details = get_issue_details(**kwargs)
-    except Exception as e:
-        logger.error(e)
+    if bounty.github_url:
+        try:
+            kwargs = get_url_dict(bounty.github_url)
+            bounty.github_issue_details = get_issue_details(**kwargs)
+        except Exception as e:
+            logger.error(e)
 
     # bounty is featured bounty
     bounty.is_featured = request.POST.get("is_featured", False)

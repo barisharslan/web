@@ -170,7 +170,8 @@ class BountySerializer(serializers.HyperlinkedModelSerializer):
             'attached_job_description', 'needs_review', 'github_issue_state', 'is_issue_closed',
             'additional_funding_summary', 'funding_organisation', 'paid', 'event',
             'admin_override_suspend_auto_approval', 'reserved_for_user_handle', 'is_featured',
-            'featuring_date', 'repo_type', 'funder_last_messaged_on', 'can_remarket', 'is_reserved'
+            'featuring_date', 'repo_type', 'funder_last_messaged_on', 'can_remarket', 'is_reserved',
+            'contact_details'
         )
 
     def create(self, validated_data):
@@ -343,6 +344,9 @@ class BountiesViewSet(viewsets.ModelViewSet):
             QuerySet: The Bounty queryset.
 
         """
+        logger.error('X' * 40)
+        logger.error('X' * 40)
+        logger.error('X' * 40)
         param_keys = self.request.query_params.keys()
         queryset = Bounty.objects.prefetch_related(
             'fulfillments', 'interested', 'interested__profile', 'activities', 'event')

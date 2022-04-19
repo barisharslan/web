@@ -5,8 +5,137 @@ window.addEventListener('dataWalletReady', function(e) {
   appFormBounty.form.funderAddress = selectedAccount;
 }, false);
 
+const helpText = {
+  '#new-bounty-acceptace-criteria': 'Check out great examples of acceptance criteria from some of our past successful bounties!'
+};
+
+Vue.use(VueQuillEditor);
 Vue.component('v-select', VueSelect.VueSelect);
 Vue.mixin({
+  data() {
+    return {
+      step: 1,
+      bountyTypes: [
+        'Bug',
+        'Project',
+        'Feature',
+        'Security',
+        'Improvement',
+        'Design',
+        'Docs',
+        'Code review',
+        'Other'
+      ],
+      tagOptions: [
+        'Web3',
+        'React',
+        'Http',
+        'Python'
+      ],
+      contactDetailsType: [
+        'Discord',
+        'Telegram',
+        'Email'
+      ],
+      networkOptions: [
+        {
+          'id': '1',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/ethereum.512bdfc90974.svg',
+          'label': 'ETH'
+        },
+        {
+          'id': '0',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/bitcoin.a606afe92dc0.svg',
+          'label': 'BTC'
+        },
+        {
+          'id': '666',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/paypal.94a717ec583d.svg',
+          'label': 'PayPal'
+        },
+        {
+          'id': '56',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/binance.f29b8c5b883c.svg',
+          'label': 'Binance'
+        },
+        {
+          'id': '1000',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/harmony.94e314f87cb6.svg',
+          'label': 'Harmony'
+        },
+        {
+          'id': '58',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/polkadot.ab164a0162c0.svg',
+          'label': 'Polkadot'
+        },
+        {
+          'id': '59',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/kusama.79f72c4ef309.svg',
+          'label': 'Kusama'
+        },
+        {
+          'id': '61',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/ethereum-classic.5da22d66e88a.svg',
+          'label': 'ETC'
+        },
+        {
+          'id': '102',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/zilliqa.53f121329fe2.svg',
+          'label': 'Zilliqa'
+        },
+        {
+          'id': '600',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/filecoin.5b66dcda075a.svg',
+          'label': 'Filecoin'
+        },
+        {
+          'id': '42220',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/celo.92f6ddaad4cd.svg',
+          'label': 'Celo'
+        },
+        {
+          'id': '30',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/rsk.ad4762fa3b4b.svg',
+          'label': 'RSK'
+        },
+        {
+          'id': '50',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/xinfin.dfca06ac5f24.svg',
+          'label': 'Xinfin'
+        },
+        {
+          'id': '1001',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/algorand.25e6b9cd9ae9.svg',
+          'label': 'Algorand'
+        },
+        {
+          'id': '1935',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/sia.1aeab380df24.svg',
+          'label': 'Sia'
+        },
+        {
+          'id': '1995',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/nervos.e3e776d77e06.svg',
+          'label': 'Nervos'
+        },
+        {
+          'id': '50797',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/tezos.66a5e2b53980.svg',
+          'label': 'Tezos'
+        },
+        {
+          'id': '270895',
+          'logo': 'https://s.gitcoin.co/static/v2/images/chains/casper.4718c7855050.svg',
+          'label': 'Casper'
+        },
+        {
+          'id': '717171',
+          'logo': null,
+          'label': 'Other'
+        }
+      ]
+    };
+  },
   methods: {
     estHoursValidator: function() {
       this.form.hours = parseFloat(this.form.hours || 0);
@@ -64,6 +193,12 @@ Vue.mixin({
         }
 
         vm.form.issueDetails = response;
+
+        let md = window.markdownit();
+
+        vm.form.richDescription = md.render(vm.form.issueDetails.description);
+        vm.form.title = vm.form.issueDetails.title;
+
         // vm.$set(vm.errors, 'issueDetails', undefined);
       }).catch((err) => {
         console.log(err);
@@ -135,45 +270,161 @@ Vue.mixin({
 
       return validateWalletAddress(vm.chainId, vm.form.funderAddress);
     },
-    checkForm: async function(e) {
+    checkFormStep1: function() {
+      let vm = this;
+
+      ret = {};
+
+      console.log('geri - checkFormStep1 vm.step1Submitted', vm.step1Submitted);
+      if (vm.step1Submitted) {
+        if (!vm.form.experience_level) {
+          ret['experience_level'] = 'Please select the experience level';
+        }
+        if (!vm.form.project_length) {
+          ret['project_length'] = 'Please select the project length';
+        }
+
+        if (!vm.form.bounty_type) {
+          ret['bounty_type'] = 'Please select the bounty type';
+        } else if (vm.form.bounty_type === 'Other') {
+          if (!vm.form.bounty_type_other) {
+            ret['bounty_type_other'] = 'Please describe your bounty type';
+          }
+        }
+        
+        if (vm.form.bounty_categories.length < 1) {
+          ret['bounty_categories'] = 'Select at least one category';
+        }
+      }
+
+      console.log('geri - checkFormStep1 ret', ret);
+      return ret;
+    },
+
+    checkFormStep2: function() {
+      let vm = this;
+
+      ret = {};
+
+      console.log('geri - checkFormStep2 vm.step2Submitted', vm.step2Submitted);
+      if (vm.step2Submitted) {
+        if (!vm.form.bountyInformationSource) {
+          ret['bountyInformationSource'] = 'Select the bounty information source';
+        } else if (vm.form.bountyInformationSource === '0') {
+          if (!vm.form.issueDetails || vm.form.issueDetails < 1) {
+            ret['issueDetails'] = 'Please input a GitHub issue';
+          }
+        } else {
+          if (!vm.form.title) {
+            ret['title'] = 'Please input bounty title';
+          }
+
+          if (!vm.form.description) {
+            ret['description'] = 'Please input bounty description';
+          }
+        }
+      }
+
+      console.log('geri - checkFormStep2 ret', ret);
+      return ret;
+    },
+
+    checkFormStep3: function() {
+      let vm = this;
+
+      ret = {};
+
+      console.log('geri - checkFormStep3 vm.step3Submitted', vm.step3Submitted);
+      if (vm.step3Submitted) {
+        if (!vm.chainId) {
+          ret['chainId'] = 'Please select a chain';
+        }
+
+        // if (!vm.form.token) {
+        //   ret['token'] = 'Please select a token';
+        // }
+      }
+
+      console.log('geri - checkFormStep3 ret', ret);
+      return ret;
+    },
+
+    checkFormStep4: function() {
+      let vm = this;
+
+      ret = {};
+
+      console.log('geri - checkFormStep4 vm.step4Submitted', vm.step4Submitted);
+      if (vm.step4Submitted) {
+        if (!vm.form.project_type) {
+          ret['project_type'] = 'Select the project type';
+        }
+        if (!vm.form.permission_type) {
+          ret['permission_type'] = 'Select the permission type';
+        }
+      }
+
+      console.log('geri - checkFormStep4 ret', ret);
+      return ret;
+    },
+
+    checkForm: async function() {
+      console.log('geri - checkForm');
       let vm = this;
 
       vm.submitted = true;
       vm.errors = {};
 
-      if (!vm.form.keywords.length) {
-        vm.$set(vm.errors, 'keywords', 'Please select the prize keywords');
+      // TODO geri do we still have this?
+      // if (!vm.form.keywords.length) {
+      //   vm.$set(vm.errors, 'keywords', 'Please select the prize keywords');
+      // }
+      if (!vm.form.experience_level) {
+        vm.$set(vm.errors, 'experience_level', 'Please select the experience level');
       }
-      if (!vm.form.experience_level || !vm.form.project_length || !vm.form.bounty_type) {
-        vm.$set(vm.errors, 'experience_level', 'Please select the details options');
+      if (!vm.form.project_length) {
+        vm.$set(vm.errors, 'project_length', 'Please select the project length');
       }
+      if (!vm.form.bounty_type) {
+        vm.$set(vm.errors, 'bounty_type', 'Please select the bounty type');
+      }
+
+
       if (!vm.chainId) {
         vm.$set(vm.errors, 'chainId', 'Please select an option');
       }
-      if (!vm.form.issueDetails || vm.form.issueDetails < 1) {
-        vm.$set(vm.errors, 'issueDetails', 'Please input a GitHub issue');
-      }
+      // TODO geri rework this
+      // if (!vm.form.issueDetails || vm.form.issueDetails < 1) {
+      //   vm.$set(vm.errors, 'issueDetails', 'Please input a GitHub issue');
+      // }
       if (vm.form.bounty_categories.length < 1) {
         vm.$set(vm.errors, 'bounty_categories', 'Select at least one category');
       }
-      if (!vm.form.funderAddress) {
-        vm.$set(vm.errors, 'funderAddress', 'Fill the owner wallet address');
-      }
-      if (!vm.validateFunderAddress()) {
-        vm.$set(vm.errors, 'funderAddress', `Please enter a valid ${vm.form.token.symbol} address`);
-      }
+      // TODO geri remove this
+      // if (!vm.form.funderAddress) {
+      //   vm.$set(vm.errors, 'funderAddress', 'Fill the owner wallet address');
+      // }
+      // if (!vm.validateFunderAddress()) {
+      //   vm.$set(vm.errors, 'funderAddress', `Please enter a valid ${vm.form.token.symbol} address`);
+      // }
       if (!vm.form.project_type) {
         vm.$set(vm.errors, 'project_type', 'Select the project type');
       }
       if (!vm.form.permission_type) {
         vm.$set(vm.errors, 'permission_type', 'Select the permission type');
       }
-      if (!vm.form.terms) {
-        vm.$set(vm.errors, 'terms', 'You need to accept the terms');
-      }
-      if (!vm.form.termsPrivacy) {
-        vm.$set(vm.errors, 'termsPrivacy', 'You need to accept the terms');
-      }
+      // TODO geri assk Chase & Will
+      // if (!vm.form.terms) {
+      //   vm.$set(vm.errors, 'terms', 'You need to accept the terms');
+      // }
+      // TODO geri assk Chase & Will
+      // if (!vm.form.termsPrivacy) {
+      //   vm.$set(vm.errors, 'termsPrivacy', 'You need to accept the terms');
+      // }
+
+      // TODO geri: rmeove logs
+      console.log('Validation errors: ', vm.errors);
+
       if (Object.keys(vm.errors).length) {
         return false;
       }
@@ -345,10 +596,16 @@ Vue.mixin({
       }
     },
     updateDate(date) {
+      // date is expected to be a momentjs object
       let vm = this;
 
-      vm.form.expirationTimeDelta = date.format('MM/DD/YYYY');
+      vm.form.expirationTimeDelta = date;
+    },
+    updatePayoutDate(date) {
+      // date is expected to be a momentjs object
+      let vm = this;
 
+      vm.form.payoutDate = date;
     },
     userSearch(search, loading) {
       let vm = this;
@@ -358,7 +615,6 @@ Vue.mixin({
       }
       loading(true);
       vm.getUser(loading, search);
-
     },
     getUser: async function(loading, search, selected) {
       let vm = this;
@@ -470,7 +726,7 @@ Vue.mixin({
           const amountAsString = new web3.utils.BN(BigInt(amountInWei)).toString();
           const token_contract = new web3.eth.Contract(token_abi, vm.form.token.address);
 
-          token_contract.methods.transfer(toAddress, web3.utils.toHex(amountAsString)).send({from: selectedAccount},
+          token_contract.methods.transfer(toAddress, web3.utils.toHex(amountAsString)).send({ from: selectedAccount },
             function(error, txnId) {
               if (error) {
                 _alert({ message: gettext('Unable to pay bounty fee. Please try again.') }, 'danger');
@@ -498,29 +754,35 @@ Vue.mixin({
       }
       return tokens;
     },
-    submitForm: async function(event) {
-      event.preventDefault();
+    submitForm: async function() {
+      console.log('geri - submitForm 1');
       let vm = this;
 
-      vm.checkForm(event);
+      vm.checkForm();
 
-      if (!provider && vm.chainId === '1') {
-        onConnect();
-        return false;
-      }
+      console.log('geri - submitForm 2');
 
-      if (Object.keys(vm.errors).length) {
-        return false;
-      }
-      if (vm.bountyFee > 0 && !vm.subscriptionActive) {
-        await vm.payFees();
-      }
-      if (vm.form.featuredBounty && !vm.subscriptionActive) {
-        await vm.payFeaturedBounty();
-      }
+      // TODO: geri: I think this can be removed?
+      // if (!provider && vm.chainId === '1') {
+      //   onConnect();
+      //   return false;
+      // }
+
+      // if (Object.keys(vm.errors).length) {
+      //   return false;
+      // }
+      // if (vm.bountyFee > 0 && !vm.subscriptionActive) {
+      //   await vm.payFees();
+      // }
+      // if (vm.form.featuredBounty && !vm.subscriptionActive) {
+      //   await vm.payFeaturedBounty();
+      // }
+
+      
+      console.log('geri - submitForm 3');
       const metadata = {
-        issueTitle: vm.form.issueDetails.title,
-        issueDescription: vm.form.issueDetails.description,
+        issueTitle: vm.form.title,
+        issueDescription: vm.form.description,
         issueKeywords: vm.form.keywords.join(),
         githubUsername: vm.form.githubUsername,
         notificationEmail: vm.form.notificationEmail,
@@ -549,7 +811,7 @@ Vue.mixin({
         'value_in_token': vm.form.amount * 10 ** vm.form.token.decimals,
         'token_name': metadata.tokenName,
         'token_address': vm.form.token.address,
-        'bounty_type': metadata.bountyType,
+        'bounty_type': metadata.bountyType !== 'Other' ? metadata.bountyType : vm.form.bounty_type_other,
         'project_length': metadata.projectLength,
         'estimated_hours': metadata.estimatedHours,
         'experience_level': metadata.experienceLevel,
@@ -583,9 +845,14 @@ Vue.mixin({
         'auto_approve_workers': vm.form.auto_approve_workers,
         'web3_type': vm.web3Type(),
         'activity': metadata.activity,
-        'bounty_owner_address': vm.form.funderAddress
+        'bounty_owner_address': vm.form.funderAddress,
+        'acceptance_criteria': vm.form.acceptanceCriteria,
+        'resources': vm.form.resources,
+        'contact_details': JSON.stringify(vm.form.contactDetails),
+        'organisation_url': vm.form.organisationUrl
       };
 
+      console.log('geri - submitForm 4');
       vm.sendBounty(params);
 
     },
@@ -616,6 +883,79 @@ Vue.mixin({
         _alert('Unable to create a bounty. Please try again later', 'danger');
       });
 
+    },
+    updateNav: function(direction) {
+      console.log('geri updateNav ', direction, this.step, this.currentSteps.length);
+      if (direction === 1) {
+        // Forward navigation
+        console.log('geri updateNav 2');
+        let errors = {};
+
+        switch (this.step) {
+          case 1:
+            console.log('geri updateNav 3');
+            this.step1Submitted = true;
+            errors = this.checkFormStep1();
+            console.log('geri updateNav 4', errors);
+            break;
+          case 2:
+            console.log('geri updateNav 5');
+            this.step2Submitted = true;
+            errors = this.checkFormStep2();
+            console.log('geri updateNav 6', errors);
+            break;
+          case 3:
+            console.log('geri updateNav 7');
+            this.step3Submitted = true;
+            errors = this.checkFormStep3();
+            console.log('geri updateNav 8', errors);
+            break;
+          case 4:
+            console.log('geri updateNav 9');
+            this.step4Submitted = true;
+            errors = this.checkFormStep4();
+            console.log('geri updateNav 10', errors);
+            break;
+          default:
+            console.log('geri - updateNav - submitting ...');
+            this.submitForm();
+            return;
+        }
+        console.log('geri - updateNav errors', errors);
+        if (Object.keys(errors).length == 0) {
+          console.log('geri - updateNav NO ERRORS');
+          this.step += 1;
+        }
+      } else if (this.step > 1) {
+        // Backward navigation
+        this.step -= 1;
+      }
+    },
+
+    removeContactDetails(idx) {
+      console.log('geri - before - ', this.form.contactDetails);
+      this.form.contactDetails.splice(idx, 1);
+      console.log('geri - after - ', this.form.contactDetails);
+    },
+
+    addContactDetails() {
+      this.form.contactDetails.push({
+        type: '',
+        value: ''
+      });
+    },
+
+    quilUpdated({ quill, text }) {
+      this.form.description = text;
+      console.log('geri - content - ', JSON.stringify(quill.getContents()));
+    },
+
+    popover(elementId) {
+      console.log('geri - popover for - ', elementId);
+      $(elementId).popover({
+        placement: 'right',
+        content: helpText[elementId]
+      }).popover('show');
     }
   },
   computed: {
@@ -633,7 +973,7 @@ Vue.mixin({
       let totalFee = Number(vm.form.amount) * fee;
       let total = Number(vm.form.amount) + totalFee;
 
-      return {'totalFee': totalFee, 'total': total };
+      return { 'totalFee': totalFee, 'total': total };
     },
     totalTx: function() {
       let vm = this;
@@ -683,7 +1023,7 @@ Vue.mixin({
       if (vm.network == '') {
         return vm.sortByPriority;
       }
-      return vm.sortByPriority.filter((item)=>{
+      return vm.sortByPriority.filter((item) => {
 
         return item.network.toLowerCase().indexOf(vm.network.toLowerCase()) >= 0;
       });
@@ -706,6 +1046,86 @@ Vue.mixin({
         }
       }
       return result;
+    },
+    currentSteps: function() {
+      const steps = [
+        {
+          text: 'Bounty Type',
+          active: false
+        },
+        {
+          text: 'Bounty Details',
+          active: false
+        },
+        {
+          text: 'Payment Information',
+          active: false
+        },
+        {
+          text: 'Additional Information',
+          active: false
+        },
+        {
+          text: 'Review Bounty',
+          active: false
+        }
+      ];
+
+      steps[this.step - 1].active = true;
+      return steps;
+    },
+    // TODO geri: we could drop this an duse chain.id everywhere ....
+    chainId: function() {
+      if (this.chain) {
+        return this.chain.id;
+      }
+      return '';
+    },
+    isExpired: function() {
+      return moment(this.form.expirationTimeDelta).isBefore();
+    },
+    expiresAfterAYear: function() {
+      return moment().diff(this.form.expirationTimeDelta, 'years') < -1;
+    },
+    step1Errors: function() {
+      console.log('geri - step1Errors');
+      return this.checkFormStep1();
+    },
+    isStep1Valid: function() {
+      let ret = Object.keys(this.step1Errors).length == 0;
+
+      console.log('geri - isStep1Valid ret', ret);
+      return ret;
+    },
+    step2Errors: function() {
+      console.log('geri - step2Errors');
+      return this.checkFormStep2();
+    },
+    isStep2Valid: function() {
+      let ret = Object.keys(this.step2Errors).length == 0;
+
+      console.log('geri - isStep2Valid ret', ret);
+      return ret;
+    },
+    step3Errors: function() {
+      console.log('geri - step3Errors');
+      return this.checkFormStep3();
+    },
+    isStep3Valid: function() {
+      let ret = Object.keys(this.step3Errors).length == 0;
+
+      console.log('geri - isStep3Valid ret', ret);
+      return ret;
+    },
+    step4Errors: function() {
+      console.log('geri - step4Errors');
+      return this.checkFormStep4();
+    },
+    isStep4Valid: function() {
+      let ret = Object.keys(this.step4Errors).length == 0;
+
+      console.log('geri - isStep4Valid ret', ret);
+      return ret;
     }
   },
   watch: {
@@ -719,16 +1139,18 @@ Vue.mixin({
       }
 
     },
-    chainId: async function(val) {
-      if (!provider && val === '1') {
-        await onConnect();
-      }
+    chain: async function(val) {
+      if (val) {
+        if (!provider && val.id === '1') {
+          await onConnect();
+        }
 
-      if (val === '56') {
-        this.getBinanceSelectedAccount();
-      }
+        if (val.id === '56') {
+          this.getBinanceSelectedAccount();
+        }
 
-      this.getTokens();
+        this.getTokens();
+      }
     }
   }
 });
@@ -742,13 +1164,13 @@ if (document.getElementById('gc-hackathon-new-bounty')) {
     },
     data() {
       return {
-
+        status: 'OPEN',
         tokens: [],
         network: 'mainnet',
-        chainId: '',
+        chain: null,
         funderAddressFallback: false,
-        checkboxes: {'terms': false, 'termsPrivacy': false, 'neverExpires': true, 'hiringRightNow': false },
-        expandedGroup: {'reserve': [], 'featuredBounty': []},
+        checkboxes: { 'terms': false, 'termsPrivacy': false, 'neverExpires': true, 'hiringRightNow': false },
+        expandedGroup: { 'reserve': [], 'featuredBounty': [] },
         errors: {},
         usersOptions: [],
         bountyFee: document.FEE_PERCENTAGE,
@@ -760,9 +1182,15 @@ if (document.getElementById('gc-hackathon-new-bounty')) {
         ethFeaturedPrice: null,
         blockedUrls: document.blocked_urls,
         dirty: false,
-        submitted: false,
+        submitted: true, //   TODO geri: remove this??? If we remove this v-selects don't get the red border any more
+        step1Submitted: false,
+        step2Submitted: false,
+        step3Submitted: false,
+        step4Submitted: false,
+        reserveBounty: null,
         form: {
-          expirationTimeDelta: moment().add(1, 'month').format('MM/DD/YYYY'),
+          expirationTimeDelta: moment().add(1, 'month'),
+          payoutDate: moment().add(1, 'month'),
           featuredBounty: false,
           fundingOrganisation: '',
           issueDetails: undefined,
@@ -779,11 +1207,40 @@ if (document.getElementById('gc-hackathon-new-bounty')) {
           keywords: [],
           amount: 0.001,
           amountusd: null,
-          token: {},
+          peg_to_usd: true,
+          token: null,
           terms: false,
           termsPrivacy: false,
           feeTxId: null,
-          couponCode: document.coupon_code
+          couponCode: document.coupon_code,
+          tags: [],
+          bounty_type: null,
+          bountyInformationSource: null,
+          contactDetails: [{
+            type: '',
+            value: ''
+          }],
+          resources: '',
+          acceptanceCriteria: '',
+          organisationUrl: '',
+          title: '',
+          description: '',
+          richDescription: '',
+          owner: ''
+        },
+        editorOptionPrio: {
+          modules: {
+            toolbar: [
+              [ 'bold', 'italic', 'underline' ],
+              [{ 'align': [] }],
+              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+              [ 'link', 'code-block' ],
+              ['clean']
+            ]
+          },
+          theme: 'snow',
+          placeholder: 'Describe what your bounty is about',
+          readOnly: true
         }
       };
     },
