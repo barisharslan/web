@@ -762,22 +762,20 @@ Vue.mixin({
 
       console.log('geri - submitForm 2');
 
-      // TODO: geri: I think this can be removed?
-      // if (!provider && vm.chainId === '1') {
-      //   onConnect();
-      //   return false;
-      // }
+      if (!provider && vm.chainId === '1') {
+        onConnect();
+        return false;
+      }
 
-      // if (Object.keys(vm.errors).length) {
-      //   return false;
-      // }
-      // if (vm.bountyFee > 0 && !vm.subscriptionActive) {
-      //   await vm.payFees();
-      // }
-      // if (vm.form.featuredBounty && !vm.subscriptionActive) {
-      //   await vm.payFeaturedBounty();
-      // }
-
+      if (Object.keys(vm.errors).length) {
+        return false;
+      }
+      if (vm.bountyFee > 0 && !vm.subscriptionActive) {
+        await vm.payFees();
+      }
+      if (vm.form.featuredBounty && !vm.subscriptionActive) {
+        await vm.payFeaturedBounty();
+      }
       
       console.log('geri - submitForm 3');
       const metadata = {
