@@ -71,11 +71,19 @@
 
   <template v-slot:footer>
     <div v-if="!subscriptionActive" class="mt-2 pl-0 pr-0 col-12">
-      <div class="bounty-creation-help p-3">
-        10% platform fee will be charged upon bounty creation. 
+
+      <div v-if="totalAmount.totalFee > 0 && chainId === '1'" class="bounty-creation-help p-3">
+        [[bountyFee]]% platform fee ([[ totalAmount.totalFee ]] [[form.token.symbol]]) will be charged upon bounty creation.
         A Gitcoin PRO subscription removes the platform fee and more.
         For more information, contact <a href="mailto:pro@gitcoin.co" target="_blank" class="font-weight-bold">pro@gitcoin.co</a>.
       </div>
+
+      <div v-else class="bounty-creation-help p-3">
+        [[bountyFee]]% platform fee will be charged upon bounty creation.
+        A Gitcoin PRO subscription removes the platform fee and more.
+        For more information, contact <a href="mailto:pro@gitcoin.co" target="_blank" class="font-weight-bold">pro@gitcoin.co</a>.
+      </div>
+
     </div>
   </template>
 
