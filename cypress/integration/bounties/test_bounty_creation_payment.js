@@ -14,7 +14,7 @@ describe('Creating a new bounty', { tags: ['bounties'] }, () => {
     cy.logout();
   });
 
-  it.skip('can create a new bounty (custom issue, not imported from github)', () => {
+  it.skip('allows a user to peg the payout to an USD amount', () => {
     cy.visit('bounty/new');
     cy.wait(1000);
 
@@ -22,7 +22,7 @@ describe('Creating a new bounty', { tags: ['bounties'] }, () => {
     cy.get('#navbarDropdownWallet').click();
     cy.wait(1000);
     cy.get('#wallet-btn').click();
-    
+
     // Screen 1
     cy.contains('Feature').click();
 
@@ -87,10 +87,11 @@ describe('Creating a new bounty', { tags: ['bounties'] }, () => {
     cy.get('#payout_token').find('.vs__search').click().type('ETH{enter}');
 
     cy.get('#usd_amount').should('be.enabled');
-    cy.get('#usd_amount').should('be.enabled');
     cy.get('#new_bounty_peg_to_usd').should('be.enabled');
 
-    cy.get('#usd_amount').clear().type('123.34');
+    let usdAmount = '5.5';
+
+    cy.get('#usd_amount').clear().type(usdAmount);
 
     cy.contains('Next').click();
 
@@ -125,6 +126,9 @@ describe('Creating a new bounty', { tags: ['bounties'] }, () => {
 
     cy.contains(bountyTitle).should('be.visible');
     cy.contains(bountyDescription).should('be.visible');
+
+    // Ensure proper information is displayed to the user about payment
+    cy.get('#value_in_usdt').should('contain', usdAmount);
   });
 
 });

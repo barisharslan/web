@@ -35,6 +35,11 @@ describe('Creating a new bounty', { tags: ['bounties'] }, () => {
     // attempt to use the UI as a real user would.
     cy.wait(1000);
 
+    // TODO geri create a command out of this
+    cy.get('#navbarDropdownWallet').click();
+    cy.wait(1000);
+    cy.get('#wallet-btn').click();
+    
     // Screen 1
     cy.contains('Feature').click();
 
@@ -167,6 +172,11 @@ describe('Creating a new bounty', { tags: ['bounties'] }, () => {
     cy.visit('bounty/new');
     cy.wait(1000);
 
+    // TODO geri create a command out of this
+    cy.get('#navbarDropdownWallet').click();
+    cy.wait(1000);
+    cy.get('#wallet-btn').click();
+    
     // Screen 1
     cy.contains('Feature').click();
 
@@ -306,6 +316,12 @@ describe('Creating a new bounty', { tags: ['bounties'] }, () => {
     cy.visit('bounty/new');
     cy.wait(1000);
 
+    // TODO geri create a command out of this
+    cy.get('#navbarDropdownWallet').click();
+    cy.wait(1000);
+    cy.get('#wallet-btn').click();
+
+    
     // Screen 1
     cy.contains('Other').click();
     cy.get('#new-bounty-type-other').type(customBountyType);
