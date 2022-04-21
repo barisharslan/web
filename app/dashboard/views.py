@@ -6093,8 +6093,8 @@ def create_bounty_v1(request):
     bounty.current_bounty = True
     bounty.issue_description = request.POST.get("issue_description", '')
     bounty.attached_job_description = request.POST.get("attached_job_description", '')
-    bounty.fee_amount = request.POST.get("fee_amount")
-    bounty.fee_tx_id = request.POST.get("fee_tx_id")
+    bounty.fee_amount = request.POST.get("fee_amount")      # TODO geri peg_to_usd related
+    bounty.fee_tx_id = request.POST.get("fee_tx_id")        # TODO geri peg_to_usd related
     bounty.metadata = json.loads(request.POST.get("metadata"))
     bounty.privacy_preferences = json.loads(request.POST.get("privacy_preferences", {}))
     bounty.funding_organisation = request.POST.get("funding_organisation")
@@ -6104,15 +6104,18 @@ def create_bounty_v1(request):
     bounty.bounty_categories = request.POST.get("bounty_categories", '').split(',')
     bounty.network = request.POST.get("network", 'mainnet')
     bounty.admin_override_suspend_auto_approval = False if request.POST.get("auto_approve_workers") == 'true' else True
-    bounty.value_in_token = float(request.POST.get("value_in_token", 0))
+    bounty.value_in_token = float(request.POST.get("value_in_token", 0))        # TODO geri peg_to_usd related
     bounty.token_address = request.POST.get("token_address")
     bounty.bounty_owner_email = request.POST.get("bounty_owner_email")
     bounty.bounty_owner_name = request.POST.get("bounty_owner_name", '') # ETC-TODO: REMOVE ?
     bounty.contract_address = bounty.token_address          # ETC-TODO: REMOVE ?
-    bounty.balance = bounty.value_in_token                  # ETC-TODO: REMOVE ?
+    bounty.balance = bounty.value_in_token                  # ETC-TODO: REMOVE ?         TODO geri peg_to_usd related
     bounty.raw_data = request.POST.get("raw_data", {})      # ETC-TODO: REMOVE ?
     bounty.web3_type = request.POST.get("web3_type", '')
-    bounty.value_true = request.POST.get("amount", 0)
+    bounty.value_true = request.POST.get("amount", 0)       # TODO geri peg_to_usd related
+    bounty.value_true_usd = request.POST.get("amount_usd", 0)       # TODO geri peg_to_usd related
+    bounty.peg_to_usd = request.POST.get("peg_to_usd", 0) == 'true'       # TODO geri peg_to_usd related
+    
     bounty.bounty_owner_address = request.POST.get("bounty_owner_address", 0)
 
     bounty.bounty_source = bounty_source
@@ -6128,14 +6131,29 @@ def create_bounty_v1(request):
     bounty.web3_created = current_time
     bounty.last_remarketed = current_time
 
-    try:
-        bounty.token_value_in_usdt = convert_token_to_usdt(bounty.token_name)
-        bounty.value_in_usdt = convert_amount(bounty.value_true, bounty.token_name, 'USDT')
-        bounty.value_in_usdt_now = bounty.value_in_usdt
-        bounty.value_in_eth = convert_amount(bounty.value_true, bounty.token_name, 'ETH')
+    # This block can be dropped, as these calculations are done in presave signal
+    # try:
+    #     if bounty.peg_to_usd:
+    #         bounty.token_value_in_usdt = convert_token_to_usdt(bounty.token_name)
+    #         bounty.value_in_usdt = bounty.value_true_usd
+    #         bounty.value_in_usdt_now = bounty.value_true_usd
 
-    except ConversionRateNotFoundError as e:
-        logger.debug(e)
+    #         bounty.usd_pegged_value_in_token = convert_amount(bounty.value_true_usd, 'USDT', bounty.token_name)
+    #         bounty.usd_pegged_value_in_token_now = bounty.value_in_usdt
+            
+    #         bounty.value_in_eth = convert_amount(bounty.value_true, 'USDT', 'ETH')
+    #     else:
+    #         bounty.token_value_in_usdt = convert_token_to_usdt(bounty.token_name)
+            
+    #         bounty.usd_pegged_value_in_token = bounty.value_true
+    #         bounty.usd_pegged_value_in_token_now = bounty.value_true
+
+    #         bounty.value_in_usdt = convert_amount(bounty.value_true, bounty.token_name, 'USDT')
+    #         bounty.value_in_usdt_now = bounty.value_in_usdt
+    #         bounty.value_in_eth = convert_amount(bounty.value_true, bounty.token_name, 'ETH')
+
+    # except ConversionRateNotFoundError as e:
+    #     logger.debug(e)
 
     # bounty expiry date
     expires_date = int(request.POST.get("expires_date", 9999999999))

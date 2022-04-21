@@ -390,6 +390,12 @@ class Bounty(SuperModel):
     value_in_usdt = models.DecimalField(default=0, decimal_places=2, max_digits=50, blank=True, null=True)
     value_in_eth = models.DecimalField(default=0, decimal_places=2, max_digits=50, blank=True, null=True)
     value_true = models.DecimalField(default=0, decimal_places=2, max_digits=50, blank=True, null=True)
+
+    usd_pegged_value_in_token_now = models.DecimalField(default=0, decimal_places=2, max_digits=50, blank=True, null=True) # The calculated amount in token, corresponding to value_true_usd
+    usd_pegged_value_in_token = models.DecimalField(default=0, decimal_places=2, max_digits=50, blank=True, null=True)     # The calculated amount in token, corresponding to value_true_usd
+    value_true_usd = models.DecimalField(default=0, decimal_places=2, max_digits=50, blank=True, null=True)     # The value the user wants to pay in USD
+    peg_to_usd = models.BooleanField(default=False)                                                             # True if the amount to pay should be pegged to USD
+
     privacy_preferences = JSONField(default=dict, blank=True)
     admin_override_and_hide = models.BooleanField(
         default=False, help_text=_('Admin override to hide the bounty from the system')
@@ -899,6 +905,14 @@ class Bounty(SuperModel):
 
     @property
     def get_value_in_eth(self):
+        if self.peg_to_usd:
+            if self.token_name == 'ETH':
+                return self.value_in_token / 10**18
+            try:
+                return convert_amount(self.value_true, 'USDT', 'ETH')
+            except Exception:
+                return None
+
         if self.token_name == 'ETH':
             return self.value_in_token / 10**18
         try:
@@ -908,20 +922,61 @@ class Bounty(SuperModel):
 
     @property
     def get_value_in_usdt_now(self):
+        if self.peg_to_usd:
+            return self.value_true_usd
         return self.value_in_usdt_at_time(None)
 
     @property
     def get_value_in_usdt(self):
+        if self.peg_to_usd:
+            return self.value_true_usd
         if self.status in self.OPEN_STATUSES:
             return self.value_in_usdt_now
         return self.value_in_usdt_then
+
+    @property
+    def get_usd_pegged_value_in_token_now(self):
+        if self.peg_to_usd:
+            try:
+                return self.usd_pegged_value_in_token_at_time(None)
+            except Exception:
+                return None
+        return self.value_true
+
+    @property
+    def get_usd_pegged_value_in_token(self):
+        if self.peg_to_usd:
+            if self.status in self.OPEN_STATUSES:
+                try:
+                    return self.usd_pegged_value_in_token_now
+                except Exception:
+                    return None
+            return self.usd_pegged_value_in_token_then
+        return self.value_true
+
+    @property
+    def usd_pegged_value_in_token_then(self):
+        return self.usd_pegged_value_in_token_at_time(self.web3_created)
+
+    def usd_pegged_value_in_token_at_time(self, at_time):
+        if self.token_name in ['USDT', 'USDC']:
+            return self.value_true_usd
+        if self.token_name in settings.STABLE_COINS:
+            return self.value_true_usd
+        try:
+            return convert_amount(self.value_true_usd, 'USDT', self.token_name)
+        except ConversionRateNotFoundError:
+            try:
+                in_eth = convert_amount(self.value_true, 'USDT', 'ETH', at_time)
+                return convert_amount(in_eth, 'ETH', self.token_name, at_time)
+            except ConversionRateNotFoundError:
+                return None
 
     @property
     def value_in_usdt_then(self):
         return self.value_in_usdt_at_time(self.web3_created)
 
     def value_in_usdt_at_time(self, at_time):
-        decimals = 10 ** 18
         if self.token_name in ['USDT', 'USDC']:
             return float(self.value_in_token / 10 ** 6)
         if self.token_name in settings.STABLE_COINS:
@@ -937,6 +992,8 @@ class Bounty(SuperModel):
 
     @property
     def token_value_in_usdt_now(self):
+        if self.peg_to_usd:
+            return self.value_true_usd
         if self.token_name in settings.STABLE_COINS:
             return 1
         try:
@@ -946,6 +1003,8 @@ class Bounty(SuperModel):
 
     @property
     def token_value_in_usdt_then(self):
+        if self.peg_to_usd:
+            return self.value_true_usd
         try:
             return round(convert_token_to_usdt(self.token_name, self.web3_created), 2)
         except ConversionRateNotFoundError:
@@ -2124,6 +2183,9 @@ def psave_bounty(sender, instance, **kwargs):
     instance.value_in_usdt = instance.get_value_in_usdt
     instance.value_in_eth = instance.get_value_in_eth
     instance.value_true = instance.get_value_true
+
+    instance.usd_pegged_value_in_token_now = instance.get_usd_pegged_value_in_token_now
+    instance.usd_pegged_value_in_token = instance.get_usd_pegged_value_in_token
 
     # https://gitcoincore.slack.com/archives/CAXQ7PT60/p1600019142065700
     if not instance.value_true:

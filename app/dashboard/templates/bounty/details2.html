@@ -56,7 +56,7 @@
               <div class="col-md-2 col-xl-1 text-center mb-2 mb-md-0">
                 <a :href="`/profile/${bounty.org_name}`" v-show="bounty.avatar_url"><img :class="`avatar avatar-big ${bounty.github_org_name}`" :src="[[bounty.avatar_url]]"></a>
               </div>
-              <div class="col-md-10">
+              <div class="col-md-8">
                 <div v-if="bounty.event" class="font-subheader hackathon-alt text-center text-lg-left" id="event_name">
                   Hackathon: [[bounty.event.name]]
                 </div>
@@ -66,12 +66,6 @@
                     <div class="tag token" data-toggle="tooltip" data-html="true" :title='`<div class="tooltip-info">${bounty.value_true} ${bounty.token_name} in funding from original funder.</div>`'>
                       <p class="inner-tooltip">
                         <span id="value_in_token">[[ bounty.value_true ]] [[ bounty.token_name ]]</span>
-                      </p>
-                    </div>
-                    <div v-if="bounty.value_in_usdt_now" id="value_in_usdt_wrapper" class="tag usd ml-3" data-toggle="tooltip" data-html="true" :title='`<div class="tooltip-info">The funding in this bounty adds up to $${bounty.value_in_usdt_now} USD </div>`'>
-                      <p class="inner-tooltip">
-                        <span id="value_in_usdt">[[bounty.value_in_usdt_now]]</span>
-                        <span>USD</span>
                       </p>
                     </div>
                     <div class="d-inline-block font-subheader ml-3" id="bounty_categories">
@@ -85,7 +79,26 @@
                     </div>
                   </div>
                 </div>
-
+              </div>
+              <div v-if="bounty.peg_to_usd && bounty.value_in_usdt_now" class="col-md-2">
+                <div id="value_in_usdt_wrapper" class="tag usd m-0 d-flex justify-content-end">
+                  <p class="inner-tooltip">
+                    <span id="value_in_usdt">[[bounty.value_in_usdt_now]]</span>
+                    <span>USD</span>
+                  </p>
+                </div>
+                <div class="w-100"></div>
+                <div class="d-flex justify-content-end">
+                  <span class="bounty-info-heading mr-1" data-toggle="tooltip" data-html="true" :title='`<div class="tooltip-info">This bounty is pegged to USD. The amount of tokens you receive will be approximately worth this amount at the time of payout.</div>`'>
+                    in [[bounty.token_name]] <i class="fas fa-info-circle"></i>
+                  </span>
+                </div>
+              </div>
+              <div v-if="!bounty.peg_to_usd && bounty.value_in_usdt_now" id="value_in_usdt_wrapper" class="tag usd ml-3 col-md-2" data-toggle="tooltip" data-html="true" :title='`<div class="tooltip-info">The funding in this bounty adds up to $${bounty.value_in_usdt_now} USD </div>`'>
+                <p class="inner-tooltip">
+                  <span id="value_in_usdt">[[bounty.value_in_usdt_now]]</span>
+                  <span>USD</span>
+                </p>
               </div>
             </div>
             <div class="row">

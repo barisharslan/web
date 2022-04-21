@@ -171,7 +171,8 @@ class BountySerializer(serializers.HyperlinkedModelSerializer):
             'additional_funding_summary', 'funding_organisation', 'paid', 'event',
             'admin_override_suspend_auto_approval', 'reserved_for_user_handle', 'is_featured',
             'featuring_date', 'repo_type', 'funder_last_messaged_on', 'can_remarket', 'is_reserved',
-            'contact_details'
+            'contact_details', 'usd_pegged_value_in_token_now', 'usd_pegged_value_in_token', 
+            'value_true_usd', 'peg_to_usd'
         )
 
     def create(self, validated_data):
