@@ -24525,5 +24525,24 @@
         "conversion_rate_id": "harmony",
         "conversion_rate_source": "coingecko"
     }
+  },
+  {
+      "model": "economy.token",
+      "pk": 374,
+      "fields": {
+          "created_on": "2022-04-22T12:35:27Z",
+          "modified_on": "2022-04-22T12:36:06.267Z",
+          "address": "0x0000000000000000000000000000000000000000",
+          "symbol": "ETH",
+          "network": "testnetrpc",
+          "decimals": 18,
+          "priority": 1,
+          "chain_id": 1,
+          "network_id": 1,
+          "metadata": {},
+          "approved": true,
+          "conversion_rate_id": null,
+          "conversion_rate_source": null
+      }
   }
 ]
