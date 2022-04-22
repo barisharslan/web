@@ -9,7 +9,7 @@
     <div class="row d-flex flex-column flex-lg-row flex-wrap pt-1">
       <div class="col btn-group-toggle">
         <label
-          v-bind:class="'w-100 btn btn-radio text-left chain-btn mr-2 mb-2 py-2 px-2 bounty-information-label ' + ((form.project_type === 'traditional')?'active':'')">
+          v-bind:class="'w-100 btn btn-radio bounty-toggle-btn text-left mr-2 mb-2 py-2 px-2 bounty-information-label ' + ((form.project_type === 'traditional')?'active':'')">
           <input type="radio" name="project_type" value="traditional" v-model="form.project_type" required>
           <div class="p-1">
             <p class="m-0 text-grey-500 font-subheader">Standard</p>
@@ -20,8 +20,8 @@
       </div>
       <div class="col btn-group-toggle">
         <label
-          v-bind:class="'w-100 btn btn-radio text-left chain-btn mr-2 mb-2 py-2 px-2 bounty-information-label ' + ((form.project_type === 'cooperative')?'active':'')">
-          <input type="radio" name="project_type" value="cooperative" v-model="form.project_type">
+          v-bind:class="'w-100 btn btn-radio bounty-toggle-btn text-left mr-2 mb-2 py-2 px-2 bounty-information-label ' + (subscriptionActive?'':'disabled ') + ((form.project_type === 'cooperative')?'active':'')">
+          <input type="radio" name="project_type" value="cooperative" v-model="form.project_type" :disabled="!subscriptionActive">
           <div class="p-1">
             <p class="m-0 text-grey-500 font-subheader">Multiple</p>
             <p class="m-0 text-grey-400 mt-1">Allow multiple contributors and one-to-many payouts.
@@ -32,6 +32,11 @@
     </div>
     <div class="text-danger" v-if="step4Errors.project_type && !form.project_type">
       [[step4Errors.project_type]]
+    </div>
+
+    <div v-if="!subscriptionActive" class="bounty-creation-help p-3">
+      Multiple contributors and payouts is only available to Gitcoin PRO members. For more information, 
+      contact <a href="mailto:pro@gitcoin.co" target="_blank" class="font-weight-bold">pro@gitcoin.co</a>.      
     </div>
   </div>
 

@@ -270,3 +270,8 @@ input:read-only {
   width: 120px;
   display: block !important;
 }
+
+.btn-radio.bounty-toggle-btn:hover:not(.disabled) {
+  background-color: #f9f9f9;
+  border-color: #3E00FF!important;
+}
