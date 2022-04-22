@@ -710,11 +710,9 @@ describe('Creating a new bounty', { tags: ['bounties'] }, () => {
       cy.get('#new_bounty_peg_to_usd').should('be.disabled');
       cy.get('#bounty_owner').should('be.enabled');
 
-      cy.get('#payout_chain').find('.vs__search').click().type('BTC{enter}');
+      cy.get('#payout_chain').find('.vs__search').click().type('ETH{enter}');
+      cy.get('#payout_token').find('.vs__search').click().type('ETH{enter}');
 
-      // cy.get('#payout_token').find('.vs__search').click().type('ETH{enter}');
-
-      cy.get('#usd_amount').should('be.enabled');
       cy.get('#usd_amount').should('be.enabled');
       cy.get('#new_bounty_peg_to_usd').should('be.enabled');
 
