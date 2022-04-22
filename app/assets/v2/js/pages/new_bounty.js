@@ -37,6 +37,12 @@ Vue.mixin({
         'Telegram',
         'Email'
       ],
+      contactDetailsPlaceholderMap: {
+        '': 'mydiscord#1234',
+        'Discord': 'mydiscord#1234',
+        'Telegram': 'mytelegramusername',
+        'Email': 'my@email.com'
+      },
       networkOptions: [
         {
           'id': '1',
@@ -137,6 +143,9 @@ Vue.mixin({
     };
   },
   methods: {
+    getContactDetailsPlaceholder: function(val) {
+      return this.contactDetailsPlaceholderMap[val] || this.contactDetailsPlaceholderMap[''];
+    },
     estHoursValidator: function() {
       this.form.hours = parseFloat(this.form.hours || 0);
       this.form.hours = Math.ceil(this.form.hours);
@@ -935,9 +944,7 @@ Vue.mixin({
     },
 
     removeContactDetails(idx) {
-      console.log('geri - before - ', this.form.contactDetails);
       this.form.contactDetails.splice(idx, 1);
-      console.log('geri - after - ', this.form.contactDetails);
     },
 
     addContactDetails() {
@@ -1224,7 +1231,7 @@ if (document.getElementById('gc-hackathon-new-bounty')) {
           bounty_type: null,
           bountyInformationSource: null,
           contactDetails: [{
-            type: '',
+            type: 'Discord',
             value: ''
           }],
           resources: '',
