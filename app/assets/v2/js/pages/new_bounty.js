@@ -214,7 +214,7 @@ Vue.mixin({
 
       $.when(getTokensData).then((response) => {
         vm.tokens = response;
-        vm.form.token = vm.filterByChainId[0];
+        // vm.form.token = vm.filterByChainId[0];
         vm.getAmount(vm.form.token.symbol);
 
       }).catch((err) => {
@@ -820,6 +820,7 @@ Vue.mixin({
         'bounty_reserved_for': metadata.reservedFor,
         'release_to_public': metadata.releaseAfter,
         'expires_date': vm.checkboxes.neverExpires ? 9999999999 : moment(vm.form.expirationTimeDelta).utc().unix(),
+        'payout_date': moment(vm.form.payoutDate).utc().unix(),
         'metadata': JSON.stringify(metadata),
         'raw_data': {}, // ETC-TODO REMOVE ?
         'network': vm.network,
@@ -1141,14 +1142,16 @@ Vue.mixin({
 
     },
     chain: async function(val) {
+      this.form.token = null;
       if (val) {
-        if (!provider && val.id === '1') {
-          await onConnect();
-        }
+        // TODO geri: remove this
+        // if (!provider && val.id === '1') {
+        //   await onConnect();
+        // }
 
-        if (val.id === '56') {
-          this.getBinanceSelectedAccount();
-        }
+        // if (val.id === '56') {
+        //   this.getBinanceSelectedAccount();
+        // }
 
         this.getTokens();
       }
@@ -1157,6 +1160,9 @@ Vue.mixin({
 });
 
 if (document.getElementById('gc-hackathon-new-bounty')) {
+  let expirationTimeDelta = moment().add(1, 'month');
+  let payoutDate = expirationTimeDelta.add(7, 'days');
+
   appFormBounty = new Vue({
     delimiters: [ '[[', ']]' ],
     el: '#gc-hackathon-new-bounty',
@@ -1170,7 +1176,7 @@ if (document.getElementById('gc-hackathon-new-bounty')) {
         network: 'mainnet',
         chain: null,
         funderAddressFallback: false,
-        checkboxes: { 'terms': false, 'termsPrivacy': false, 'neverExpires': true, 'hiringRightNow': false },
+        checkboxes: { 'terms': false, 'termsPrivacy': false, 'neverExpires': false, 'hiringRightNow': false },
         expandedGroup: { 'reserve': [], 'featuredBounty': [] },
         errors: {},
         usersOptions: [],
@@ -1190,8 +1196,8 @@ if (document.getElementById('gc-hackathon-new-bounty')) {
         step4Submitted: false,
         reserveBounty: null,
         form: {
-          expirationTimeDelta: moment().add(1, 'month'),
-          payoutDate: moment().add(1, 'month'),
+          expirationTimeDelta: expirationTimeDelta,
+          payoutDate: payoutDate,
           featuredBounty: false,
           fundingOrganisation: '',
           issueDetails: undefined,
