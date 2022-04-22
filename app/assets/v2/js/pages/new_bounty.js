@@ -1212,7 +1212,7 @@ if (document.getElementById('gc-hackathon-new-bounty')) {
           project_type: '',
           permission_type: '',
           keywords: [],
-          amount: 0.001,
+          amount: 0.0,
           amountusd: null,
           peg_to_usd: true,
           token: null,
