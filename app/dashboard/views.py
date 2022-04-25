@@ -6135,6 +6135,7 @@ def create_bounty_v1(request):
     bounty.web3_created = current_time
     bounty.last_remarketed = current_time
 
+    # TODO geri:
     # This block can be dropped, as these calculations are done in presave signal
     # try:
     #     if bounty.peg_to_usd:

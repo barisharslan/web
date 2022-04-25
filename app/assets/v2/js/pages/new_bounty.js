@@ -774,6 +774,18 @@ Vue.mixin({
         await vm.payFeaturedBounty();
       }
       
+      if (vm.form.organisationUrl) {
+        try {
+          let url = new URL(vm.form.organisationUrl);
+          let pathSegments = url.pathname.split('/');
+          let orgName = pathSegments[pathSegments.length - 1] || pathSegments[pathSegments.length - 2];
+
+          vm.form.fundingOrganisation = orgName;
+        } catch (error) {
+          vm.form.fundingOrganisation = vm.form.organisationUrl;
+        }
+      }
+
       console.log('geri - submitForm 3');
       const metadata = {
         issueTitle: vm.form.title,
@@ -845,7 +857,6 @@ Vue.mixin({
         'acceptance_criteria': vm.form.acceptanceCriteria,
         'resources': vm.form.resources,
         'contact_details': JSON.stringify(vm.form.contactDetails),
-        'organisation_url': vm.form.organisationUrl,
         'bounty_source': vm.form.bountyInformationSource,
         'peg_to_usd': vm.form.peg_to_usd,
         'amount_usd': vm.form.amountusd,
