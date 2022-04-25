@@ -71,6 +71,7 @@ describe('Creating a new bounty', { tags: ['bounties'] }, () => {
     cy.get('.new-bounty-contact-details-form-2').find('.new-bounty-contact-type').find('.vs__search').click().type('Mail{enter}');
     cy.get('.new-bounty-contact-details-form-2').find('.new-bounty-contact-value').clear().type(contactEmail);
 
+    cy.get('#new-bounty-organisation-url').clear().type('https://github.com/gitcoinco');
 
     cy.contains('Next').click();
 
@@ -79,7 +80,6 @@ describe('Creating a new bounty', { tags: ['bounties'] }, () => {
     cy.get('#usd_amount').should('be.disabled');
     cy.get('#amount').should('be.disabled');
     cy.get('#new_bounty_peg_to_usd').should('be.disabled');
-    cy.get('#bounty_owner').should('be.enabled');
 
     cy.get('#payout_chain').find('.vs__search').click().type('ETH{enter}');
     // cy.get('#payout_token').should('be.enabled');           TODO: this check does not work
