@@ -6051,6 +6051,8 @@ def create_bounty_v1(request):
     # TODO geri
     logger.error("*" * 80)
     logger.error("request: %s", pformat(dict(request.META)))
+    logger.error("-" * 80)
+    logger.error("request: %s", pformat(dict(request.POST)))
     logger.error("*" * 80)
 
     if not user:
@@ -6125,6 +6127,8 @@ def create_bounty_v1(request):
     contact_details = request.POST.get("contact_details", "")
     if contact_details:
         bounty.contact_details = json.loads(contact_details)
+
+    owners = request.POST.get("owners", "")
 
     current_time = timezone.now()
 
@@ -6212,6 +6216,11 @@ def create_bounty_v1(request):
         logger.error(e)
 
     bounty.save()
+
+    # Now that bounty has an ID save the m2m fields
+    if owners:
+        for owner_id in json.loads(owners):
+            bounty.owners.add(Profile.objects.get(pk=owner_id))
 
     # save again so we have the primary key set and now we can set the
     # standard_bounties_id

@@ -94,32 +94,30 @@
 
   <!-- Reserved for -->
   <div class="mb-4" v-if="form.permission_type === 'approval' && reserveBounty">
-    <div class="mt-4">
-      <label class="font-caption letter-spacing text-black-60 text-uppercase">{% trans "Reserved for" %}</label>
-      <v-select id="reservedFor" label="text" @search="userSearch" :reduce="user => user.text" :options="usersOptions" placeholder="Reserved for" v-model="form.reservedFor">
-        <template slot="no-options">
-          type to search Users..
-        </template>
-        <template slot="option" slot-scope="option">
-          <div class="d-flex align-items-baseline">
-            <div class="mr-2">
-              <img class="rounded-circle" :src="option.avatar_url" width="40" height="40"/>
-            </div>
-            <div>[[ option.text ]]</div>
+    <label class="font-caption letter-spacing text-black-60 text-uppercase">{% trans "Reserved for" %}</label>
+    <v-select id="reservedFor" label="text" @search="userSearch" :reduce="user => user.text" :options="usersOptions" placeholder="Reserved for" v-model="form.reservedFor">
+      <template slot="no-options">
+        type to search Users..
+      </template>
+      <template slot="option" slot-scope="option">
+        <div class="d-flex align-items-baseline">
+          <div class="mr-2">
+            <img class="rounded-circle" :src="option.avatar_url" width="40" height="40"/>
           </div>
+          <div>[[ option.text ]]</div>
+        </div>
 
-        </template>
-        <template slot="selected-option" slot-scope="option">
-          <div class="d-flex align-items-baseline">
-            <div class="mr-2">
-              <img class="rounded-circle" :src="option.avatar_url" width="20" height="20"/>
-            </div>
-            <div>[[ option.text ]]</div>
+      </template>
+      <template slot="selected-option" slot-scope="option">
+        <div class="d-flex align-items-baseline">
+          <div class="mr-2">
+            <img class="rounded-circle" :src="option.avatar_url" width="20" height="20"/>
           </div>
-        </template>
+          <div>[[ option.text ]]</div>
+        </div>
+      </template>
 
-      </v-select>
-    </div>
+    </v-select>
   </div>
 
   <!-- Submission cutoff date -->

@@ -448,6 +448,10 @@ class Bounty(SuperModel):
     # resources
     resources = models.TextField(default='', blank=True, null=True, help_text=_('Resources'))
 
+    # Allow multiple owners
+    # This contains a list of IDs to dashboard.Profile
+    owners = models.ManyToManyField("Profile")
+
     class Meta:
         """Define metadata associated with Bounty."""
 

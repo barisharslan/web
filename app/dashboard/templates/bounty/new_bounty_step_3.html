@@ -1,3 +1,4 @@
+{% load i18n static email_obfuscator add_url_schema avatar_tags bundle %}
 <form-wrapper v-if="step === 3" :heading="'Payment Information'" :current-step="step" :total-steps="currentSteps.length"
   @update-navigation="updateNav" :disable-confirm="!isStep3Valid">
 
@@ -66,8 +67,32 @@
   <div class="mb-4">
     <label class="mb-1 font-subheader font-weight-normal letter-spacing">Add bounty owners</label>
     <p class="text-muted mb-0">Additional bounty owners will be able to edit and payout this bounty on your behalf.</p>
-    <input id="bounty_owner" name="bounty_owners" class="form__input" type="text" v-model="form.owner" placeholder="Enter Gitcoin username">
+
+    <v-select id="bounty_owner" label="text" @search="userSearch" :multiple="true" :options="usersOptions" placeholder="Additional bounty owners" v-model="form.bounty_owners">
+      <template slot="no-options">
+        type to search Users..
+      </template>
+      <template slot="option" slot-scope="option">
+        <div class="d-flex align-items-baseline">
+          <div class="mr-2">
+            <img class="rounded-circle" :src="option.avatar_url" width="40" height="40"/>
+          </div>
+          <div>[[ option.text ]]</div>
+        </div>
+
+      </template>
+      <template slot="selected-option" slot-scope="option">
+        <div class="d-flex align-items-baseline">
+          <div class="mr-2">
+            <img class="rounded-circle" :src="option.avatar_url" width="20" height="20"/>
+          </div>
+          <div>[[ option.text ]]</div>
+        </div>
+      </template>
+
+    </v-select>
   </div>
+
 
   <template v-slot:footer>
     <div v-if="!subscriptionActive" class="mt-2 pl-0 pr-0 col-12">

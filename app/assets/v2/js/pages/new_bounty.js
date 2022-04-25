@@ -284,7 +284,6 @@ Vue.mixin({
 
       ret = {};
 
-      console.log('geri - checkFormStep1 vm.step1Submitted', vm.step1Submitted);
       if (vm.step1Submitted) {
         if (!vm.form.experience_level) {
           ret['experience_level'] = 'Please select the experience level';
@@ -306,7 +305,6 @@ Vue.mixin({
         }
       }
 
-      console.log('geri - checkFormStep1 ret', ret);
       return ret;
     },
 
@@ -315,7 +313,6 @@ Vue.mixin({
 
       ret = {};
 
-      console.log('geri - checkFormStep2 vm.step2Submitted', vm.step2Submitted);
       if (vm.step2Submitted) {
         if (!vm.form.bountyInformationSource) {
           ret['bountyInformationSource'] = 'Select the bounty information source';
@@ -334,7 +331,6 @@ Vue.mixin({
         }
       }
 
-      console.log('geri - checkFormStep2 ret', ret);
       return ret;
     },
 
@@ -343,7 +339,6 @@ Vue.mixin({
 
       ret = {};
 
-      console.log('geri - checkFormStep3 vm.step3Submitted', vm.step3Submitted);
       if (vm.step3Submitted) {
         if (!vm.chainId) {
           ret['chainId'] = 'Please select a chain';
@@ -354,7 +349,6 @@ Vue.mixin({
         // }
       }
 
-      console.log('geri - checkFormStep3 ret', ret);
       return ret;
     },
 
@@ -363,7 +357,6 @@ Vue.mixin({
 
       ret = {};
 
-      console.log('geri - checkFormStep4 vm.step4Submitted', vm.step4Submitted);
       if (vm.step4Submitted) {
         if (!vm.form.project_type) {
           ret['project_type'] = 'Select the project type';
@@ -373,12 +366,10 @@ Vue.mixin({
         }
       }
 
-      console.log('geri - checkFormStep4 ret', ret);
       return ret;
     },
 
     checkForm: async function() {
-      console.log('geri - checkForm');
       let vm = this;
 
       vm.submitted = true;
@@ -430,9 +421,6 @@ Vue.mixin({
       // if (!vm.form.termsPrivacy) {
       //   vm.$set(vm.errors, 'termsPrivacy', 'You need to accept the terms');
       // }
-
-      // TODO geri: rmeove logs
-      console.log('Validation errors: ', vm.errors);
 
       if (Object.keys(vm.errors).length) {
         return false;
@@ -860,10 +848,10 @@ Vue.mixin({
         'organisation_url': vm.form.organisationUrl,
         'bounty_source': vm.form.bountyInformationSource,
         'peg_to_usd': vm.form.peg_to_usd,
-        'amount_usd': vm.form.amountusd
+        'amount_usd': vm.form.amountusd,
+        'owners': JSON.stringify(vm.form.bounty_owners.map(owner => owner.id))
       };
 
-      console.log('geri - submitForm 4');
       vm.sendBounty(params);
 
     },
@@ -1240,7 +1228,7 @@ if (document.getElementById('gc-hackathon-new-bounty')) {
           title: '',
           description: '',
           richDescription: '',
-          owner: ''
+          bounty_owners: []
         },
         editorOptionPrio: {
           modules: {
