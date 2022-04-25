@@ -26,7 +26,7 @@ describe('Creating a new bounty', { tags: ['bounties'] }, () => {
     // Screen 1
     cy.contains('Feature').click();
 
-    let tags = ['Python', 'Lua', 'Web Assembly'];
+    let tags = [ 'Python', 'Lua', 'Web Assembly' ];
 
     tags.forEach(tag => {
       if (tag === 'Python') {
