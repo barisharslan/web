@@ -343,6 +343,8 @@ describe('Creating a new bounty', { tags: ['bounties'] }, () => {
     // Screen 2
     cy.contains('Import from GitHub').click();
 
+    let bountyDescriptionText = 'This is bounty description pulled from github!';
+
     cy.intercept('/sync/get_issue_details*', {
       body: {
         'keywords': [
@@ -352,8 +354,8 @@ describe('Creating a new bounty', { tags: ['bounties'] }, () => {
           'Shell'
         ],
         'title': 'Bounty title',
-        'body': 'Test validate address 3\r\n- step 1: do this\r\n- step 2: do that\r\n\r\n!!! **Note**: _This is very important_ ',
-        'description': 'Test validate address 3\r- step 1: do this\r- step 2: do that\r\r!!! **Note**: _This is very important_',
+        'body': bountyDescriptionText + 'Test validate address 3\r\n- step 1: do this\r\n- step 2: do that\r\n\r\n!!! **Note**: _This is very important_ ',
+        'description': bountyDescriptionText + 'Test validate address 3\r- step 1: do this\r- step 2: do that\r\r!!! **Note**: _This is very important_',
         'state': 'open'
       }
     }).as('getIssueDetails');
@@ -426,6 +428,7 @@ describe('Creating a new bounty', { tags: ['bounties'] }, () => {
     cy.url().should('include', '/issue/');
     cy.get('#experience_level').contains('Beginner');
     cy.get('#bounty_type').contains(customBountyType);
+    cy.contains(bountyDescriptionText).should('be.visible');
   });
 
   describe('Verify bounty field validation', () => {
