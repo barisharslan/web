@@ -2167,13 +2167,15 @@ def psave_bounty(sender, instance, **kwargs):
         'Months': 5,
     }
 
-    instance.github_url = instance.github_url.lower()
-    try:
-        handle = instance.github_url.split('/')[3]
-        if not instance.org:
-            instance.org = Profile.objects.get(handle=handle)
-    except:
-        pass
+    if instance.github_url:
+        instance.github_url = instance.github_url.lower() 
+        try:
+            handle = instance.github_url.split('/')[3]
+            if not instance.org:
+                instance.org = Profile.objects.get(handle=handle)
+        except:
+            pass
+
     instance.idx_status = instance.status
     instance.fulfillment_accepted_on = instance.get_fulfillment_accepted_on
     instance.fulfillment_submitted_on = instance.get_fulfillment_submitted_on
