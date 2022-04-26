@@ -81,7 +81,7 @@
                   <template v-if="bounty.peg_to_usd && bounty.value_in_usdt_now">
                     <div id="value_in_usdt_wrapper" class="tag bounty-info-amount m-0 px-2">
                       <p class="inner-tooltip">
-                        <span id="value_in_usdt">[[bounty.value_in_usdt_now]]</span>
+                        <span id="value_in_usdt">[[bounty.value_true_usd]]</span>
                         <span>USD</span>
                       </p>
                     </div>
@@ -92,12 +92,14 @@
                     </div>
                   </template>
 
-                  <div v-if="!bounty.peg_to_usd && bounty.value_in_usdt_now" id="value_in_usdt_wrapper" class="tag usd ml-3 col-md-2" data-toggle="tooltip" data-html="true" :title='`<div class="tooltip-info">The funding in this bounty adds up to $${bounty.value_in_usdt_now} USD </div>`'>
-                    <p class="inner-tooltip">
-                      <span id="value_in_usdt">[[bounty.value_in_usdt_now]]</span>
-                      <span>USD</span>
-                    </p>
-                  </div>
+                  <template v-if="!bounty.peg_to_usd && bounty.value_true">
+                    <div id="value_in_token_wrapper" class="tag bounty-info-amount m-0 px-2">
+                      <p class="inner-tooltip">
+                        <span id="value_in_token">[[bounty.value_true]]</span>
+                        <span>[[bounty.token_name]]</span>
+                      </p>
+                    </div>
+                  </template>
                 </div>
               </div>
             </div>
