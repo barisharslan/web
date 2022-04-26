@@ -323,7 +323,7 @@ class Bounty(SuperModel):
     project_length = models.CharField(max_length=50, choices=PROJECT_LENGTHS, blank=True, db_index=True)
     estimated_hours = models.PositiveIntegerField(blank=True, null=True)
     experience_level = models.CharField(max_length=50, choices=EXPERIENCE_LEVELS, blank=True, db_index=True)
-    github_url = models.URLField(db_index=True)
+    github_url = models.URLField(db_index=True, blank=True, null=True)
     github_issue_details = JSONField(default=dict, blank=True, null=True)
     github_comments = models.IntegerField(default=0)
     bounty_owner_address = models.CharField(max_length=100, blank=True, null=True, db_index=True)
@@ -343,6 +343,7 @@ class Bounty(SuperModel):
     reserved_for_user_expiration = models.DateTimeField(blank=True, null=True)
     is_open = models.BooleanField(db_index=True, help_text=_('Whether the bounty is still open for fulfillments.'))
     expires_date = models.DateTimeField()
+    payout_date = models.DateTimeField(null=True, blank=True)
     raw_data = JSONField(blank=True)
     metadata = JSONField(default=dict, blank=True)
     current_bounty = models.BooleanField(
@@ -450,7 +451,7 @@ class Bounty(SuperModel):
 
     # Allow multiple owners
     # This contains a list of IDs to dashboard.Profile
-    owners = models.ManyToManyField("Profile")
+    owners = models.ManyToManyField("Profile", null=True, blank=True)
 
     class Meta:
         """Define metadata associated with Bounty."""

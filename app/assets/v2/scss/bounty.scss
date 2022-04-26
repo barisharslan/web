@@ -893,3 +893,9 @@ a.btn {
 .qrcode {
   display: inline-block;
 }
+
+.tag.bounty-category-tag {
+  background-color: $gc-violet-100;
+  color: $gc-violet-400;
+  border-radius: 10px;
+}

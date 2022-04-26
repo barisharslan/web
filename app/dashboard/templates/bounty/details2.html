@@ -63,42 +63,40 @@
                 <h4 id="title" class="font-title p-0 text-center text-lg-left">[[ bounty.title ]]</h4>
                 <div class="text-center text-lg-left">
                   <div class="tags font-caption d-inline-flex d-md-flex">
-                    <div class="tag token" data-toggle="tooltip" data-html="true" :title='`<div class="tooltip-info">${bounty.value_true} ${bounty.token_name} in funding from original funder.</div>`'>
-                      <p class="inner-tooltip">
-                        <span id="value_in_token">[[ bounty.value_true ]] [[ bounty.token_name ]]</span>
-                      </p>
-                    </div>
-                    <div class="d-inline-block font-subheader ml-3" id="bounty_categories">
-                      <template v-for="category in bounty.bounty_categories">
-                        <span class="badge badge-secondary mr-1" v-if="category === 'frontend'"><i class="fas fa-laptop-code"></i> Front End</span>
-                        <span class="badge badge-secondary mr-1" v-else-if="category === 'backend'"><i class="fas fa-code"></i> Back End</span>
-                        <span class="badge badge-secondary mr-1" v-else-if="category === 'design'"><i class="fas fa-pencil-ruler"></i> Design</span>
-                        <span class="badge badge-secondary mr-1" v-else-if="category === 'documentation'"><i class="fas fa-file-alt"></i> Documentation</span>
-                        <span class="badge badge-secondary mr-1" v-else="category === 'other'"><i class="fas fa-briefcase"></i> Other</span>
-                      </template>
+                    <!-- TODO geri: double check that we are handling the catgeories properly ... -->
+                    <div v-for="category in bounty.bounty_categories" class="tag bounty-category-tag mr-1 px-2">
+                        <p v-if="category === 'frontend'">Front End</p>
+                        <p v-else-if="category === 'backend'">Back End</p>
+                        <p v-else-if="category === 'design'">Design</p>
+                        <p v-else-if="category === 'documentation'">Documentation</p>
+                        <p v-else="category === 'other'">[[category]]</p>
                     </div>
                   </div>
                 </div>
               </div>
-              <div v-if="bounty.peg_to_usd && bounty.value_in_usdt_now" class="col-md-2">
-                <div id="value_in_usdt_wrapper" class="tag usd m-0 d-flex justify-content-end">
+
+              <div class="col-md-2">
+                <template v-if="bounty.peg_to_usd && bounty.value_in_usdt_now">
+                  <div id="value_in_usdt_wrapper" class="tag usd m-0 d-flex justify-content-end">
+                    <p class="inner-tooltip">
+                      <span id="value_in_usdt">[[bounty.value_in_usdt_now]]</span>
+                      <span>USD</span>
+                    </p>
+                  </div>
+                  <div class="w-100"></div>
+                  <div class="d-flex justify-content-end">
+                    <span class="bounty-info-heading mr-1" data-toggle="tooltip" data-html="true" :title='`<div class="tooltip-info">This bounty is pegged to USD. The amount of tokens you receive will be approximately worth this amount at the time of payout.</div>`'>
+                      in [[bounty.token_name]] <i class="fas fa-info-circle"></i>
+                    </span>
+                  </div>
+                </template>
+
+                <div v-if="!bounty.peg_to_usd && bounty.value_in_usdt_now" id="value_in_usdt_wrapper" class="tag usd ml-3 col-md-2" data-toggle="tooltip" data-html="true" :title='`<div class="tooltip-info">The funding in this bounty adds up to $${bounty.value_in_usdt_now} USD </div>`'>
                   <p class="inner-tooltip">
                     <span id="value_in_usdt">[[bounty.value_in_usdt_now]]</span>
                     <span>USD</span>
                   </p>
                 </div>
-                <div class="w-100"></div>
-                <div class="d-flex justify-content-end">
-                  <span class="bounty-info-heading mr-1" data-toggle="tooltip" data-html="true" :title='`<div class="tooltip-info">This bounty is pegged to USD. The amount of tokens you receive will be approximately worth this amount at the time of payout.</div>`'>
-                    in [[bounty.token_name]] <i class="fas fa-info-circle"></i>
-                  </span>
-                </div>
-              </div>
-              <div v-if="!bounty.peg_to_usd && bounty.value_in_usdt_now" id="value_in_usdt_wrapper" class="tag usd ml-3 col-md-2" data-toggle="tooltip" data-html="true" :title='`<div class="tooltip-info">The funding in this bounty adds up to $${bounty.value_in_usdt_now} USD </div>`'>
-                <p class="inner-tooltip">
-                  <span id="value_in_usdt">[[bounty.value_in_usdt_now]]</span>
-                  <span>USD</span>
-                </p>
               </div>
             </div>
             <div class="row">
@@ -111,15 +109,6 @@
               </div>
             </div>
             <div id="bounty-info-row" class="row font-body bounty-info">
-              <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-between">
-                <span class="bounty-info-heading timeleft">{% trans "Time left" %} </span>
-
-                <span v-if="isExpired" class="bounty-info-text pr-sm-3 pr-md-5">Expired</span>
-                <span v-else-if="expiresAfterAYear" class="bounty-info-text pr-sm-3 pr-md-5">More than a year</span>
-                <time v-else class="bounty-info-text pr-sm-3 pr-md-5" :datetime="bounty.expires_date" :title="bounty.expires_date | momentFormat" id="expires_date">
-                  [[ bounty.expires_date | moment ]]
-                </time>
-              </div>
               <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-between">
                 <span class="bounty-info-heading">{% trans "Opened" %} </span>
                 <time class="bounty-info-text pr-sm-3 pr-md-5" :datetime="bounty.web3_created" :title="bounty.web3_created | momentFormat" id="web3_created">
@@ -167,40 +156,45 @@
               </div>
             </div>
 
-            <div id="bounty-info-row" class="row font-body bounty-info">
-              <div v-if="bounty.project_length" class="col-12 col-sm-6 col-md-4 d-flex justify-content-between" v-if="bounty.project_length">
+            <div id="bounty-info-row" class="row font-body bounty-info mt-3">
+              <div v-if="bounty.expires_date" class="col-12 col-sm-6 col-md-4 d-flex justify-content-between">
                 <span class="bounty-info-heading">{% trans "Submission Cutoff Date" %}</span>
-                <span class="bounty-info-text pr-sm-3 pr-md-5" id="project_length">[[ bounty.project_length ]]</span>
-              </div>
-
-              <div v-if="bounty.project_length" class="col-12 col-sm-6 col-md-4 d-flex justify-content-between" v-if="bounty.project_length">
-                <span class="bounty-info-heading">{% trans "Estimated Payout Date" %}</span>
-                <span class="bounty-info-text pr-sm-3 pr-md-5" id="project_length">[[ bounty.project_length ]]</span>
-              </div>
-            </div>
-
-            <div class="mt-3">
-              <span class="bounty-info-heading">{% trans "Bounty Owner" %}</span>
-            </div>
-
-            <div id="bounty-info-row" class="row font-body bounty-info">
-              <div class="col-12 col-sm-4 col-md-2 d-flex mt-1 text-nowrap" v-for="owner in bounty.owners">                
-                <div class="mr-2">
-                  <img class="rounded-circle" :src="owner.avatar_url" width="24" height="24"/>
+                <span v-if="isExpired" class="bounty-info-text pr-sm-3 pr-md-5">Expired</span>
+                <span v-else-if="expiresAfterAYear" class="bounty-info-text pr-sm-3 pr-md-5">More than a year</span>
+                <time v-else class="bounty-info-text pr-sm-3 pr-md-5" :datetime="bounty.expires_date" :title="bounty.expires_date | momentFormat" id="expires_date">
+                  [[ bounty.expires_date | moment ]]
+                </time>
                 </div>
-                <span style="padding-top: 2px;">[[owner.handle]]</span>
-              </div>              
+
+              <div v-if="bounty.payout_date" class="col-12 col-sm-6 col-md-4 d-flex justify-content-between">
+                <span class="bounty-info-heading">{% trans "Estimated Payout Date" %}</span>
+                <span class="bounty-info-text pr-sm-3 pr-md-5" id="project_length">[[ bounty.payout_date | moment ]]</span>
+              </div>
             </div>
 
-            <div class="mt-3">
-              <span class="bounty-info-heading mt-2">{% trans "Contacts" %}</span>
+            <div v-if="bounty.owners && bounty.owners.length > 0" class="mt-3">
+              <span class="bounty-info-heading">{% trans "Bounty Owner" %}</span>
+
+              <div id="bounty-info-row" class="row font-body bounty-info">
+                <div class="col-12 col-sm-4 col-md-2 d-flex mt-1 text-nowrap" v-for="owner in bounty.owners">                
+                  <div class="mr-2">
+                    <img class="rounded-circle" :src="owner.avatar_url" width="24" height="24"/>
+                  </div>
+                  <span style="padding-top: 2px;">[[owner.handle]]</span>
+                </div>              
+              </div>
             </div>
-            <div id="bounty-info-row" class="row font-body bounty-info">
-              <div class="col-12 col-sm-4 col-md-2 d-flex mt-1 text-nowrap" v-for="contact in bounty.contact_details">                
-                <span v-if="contact.type=='Discord'"><i class="fab fa-discord mr-1"></i>[[contact.value]]</span>
-                <span v-if="contact.type=='Email'"><i class="fal fa-envelope mr-1"></i>[[contact.value]]</span>
-                <span v-if="contact.type=='Telegram'"><i class="fab fa-telegram-plane mr-1"></i>[[contact.value]]</span>
-              </div>              
+
+            <div v-if="bounty.contact_details && bounty.contact_details.length > 0" class="mt-3">
+              <span class="bounty-info-heading">{% trans "Contacts" %}</span>
+
+              <div id="bounty-info-row" class="row font-body bounty-info">
+                <div class="col-12 col-sm-4 col-md-2 d-flex mt-1 text-nowrap" v-for="contact in bounty.contact_details">                
+                  <span v-if="contact.type=='Discord'"><i class="fab fa-discord mr-1"></i>[[contact.value]]</span>
+                  <span v-if="contact.type=='Email'"><i class="fal fa-envelope mr-1"></i>[[contact.value]]</span>
+                  <span v-if="contact.type=='Telegram'"><i class="fab fa-telegram-plane mr-1"></i>[[contact.value]]</span>
+                </div>              
+              </div>
             </div>
 
             <div class="row">
@@ -287,6 +281,24 @@
                       <a class="tag keyword" :href="`/explorer/?q=${keyword.trim()}`">[[ keyword ]]</a>[[ ' ' ]]
                     </template>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="bounty.acceptance_criteria" class="row">
+              <div class="col-12 mt-2">
+                <h5 class="bounty-heading mt-0 pt-4">{% trans "Acceptance Criteria" %}</h5>
+                <div class="acceptance_criteria">
+                  <pre>[[ bounty.acceptance_criteria ]]</pre>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="bounty.resources" class="row">
+              <div class="col-12 mt-2">
+                <h5 class="bounty-heading mt-0 pt-4">{% trans "Resources" %}</h5>
+                <div class="resources">
+                  <pre>[[ bounty.resources ]]</pre>
                 </div>
               </div>
             </div>

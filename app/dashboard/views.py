@@ -6167,6 +6167,14 @@ def create_bounty_v1(request):
         timezone=UTC
     )
 
+    # bounty payout date
+    payout_date = int(request.POST.get("payout_date", 9999999999))
+    bounty.payout_date = timezone.make_aware(
+        timezone.datetime.fromtimestamp(payout_date),
+        timezone=UTC
+    )
+    
+
     # bounty github data
     if bounty.github_url:
         try:

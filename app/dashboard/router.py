@@ -189,7 +189,7 @@ class BountySerializer(serializers.HyperlinkedModelSerializer):
             'admin_override_suspend_auto_approval', 'reserved_for_user_handle', 'is_featured',
             'featuring_date', 'repo_type', 'funder_last_messaged_on', 'can_remarket', 'is_reserved',
             'contact_details', 'usd_pegged_value_in_token_now', 'usd_pegged_value_in_token', 
-            'value_true_usd', 'peg_to_usd', 'owners'
+            'value_true_usd', 'peg_to_usd', 'owners', 'payout_date', 'acceptance_criteria', 'resources'
         )
 
     def create(self, validated_data):
