@@ -789,7 +789,7 @@ Vue.mixin({
       console.log('geri - submitForm 3');
       const metadata = {
         issueTitle: vm.form.title,
-        issueDescription: vm.form.description,
+        issueDescription: vm.form.bountyInformationSource == 'github' ? vm.form.issueDetails.description : vm.form.description,
         issueKeywords: vm.form.keywords.join(),
         githubUsername: vm.form.githubUsername,
         notificationEmail: vm.form.notificationEmail,
