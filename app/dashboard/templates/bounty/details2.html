@@ -52,12 +52,12 @@
                 <i class="fas fa-chevron-left font-caption"></i> {% trans "Back to Issue Explorer" %}
               </a>
             {% endif %}
-            <div class="row align-items-center mt-4 mb-3" style="background-color: lightgray;">
-              <div class="col-md-2 col-xl-1 text-center mb-2 mb-md-0" style="background-color: lightcyan;">
+            <div class="row align-items-center mt-4 mb-3">
+              <div class="col-md-2 col-xl-1 text-center mb-2 mb-md-0">
                 <a :href="`/profile/${bounty.org_name}`" v-show="bounty.avatar_url"><img :class="`avatar avatar-big ${bounty.github_org_name}`" :src="[[bounty.avatar_url]]"></a>
               </div>
-              
-              <div class="col-md-8 col-xl-10" style="background-color: lightcyan;">
+
+              <div class="col-md-8 col-xl-10">
                 <div v-if="bounty.event" class="font-subheader hackathon-alt text-center text-lg-left" id="event_name">
                   Hackathon: [[bounty.event.name]]
                 </div>
@@ -76,31 +76,30 @@
                 </div>
               </div>
 
-              <div class="col-md-2 col-xl-1" style="background-color: lightcyan;">
-                <template v-if="bounty.peg_to_usd && bounty.value_in_usdt_now">
-                  <div id="value_in_usdt_wrapper" class="tag usd m-0 d-inline-flex justify-content-end">
+              <div class="col-md-2 col-xl-1">
+                <div class="d-flex align-items-end flex-column">
+                  <template v-if="bounty.peg_to_usd && bounty.value_in_usdt_now">
+                    <div id="value_in_usdt_wrapper" class="tag bounty-info-amount m-0 px-2">
+                      <p class="inner-tooltip">
+                        <span id="value_in_usdt">[[bounty.value_in_usdt_now]]</span>
+                        <span>USD</span>
+                      </p>
+                    </div>
+                    <div>
+                      <span class="bounty-info-payment-token mr-1" data-toggle="tooltip" data-html="true" :title='`<div class="tooltip-info">This bounty is pegged to USD. The amount of tokens you receive will be approximately worth this amount at the time of payout.</div>`'>
+                        in <span class="bounty-info-payment-token-name mr-1">[[bounty.token_name]]</span> <i class="text-muted fas fa-info-circle"></i>
+                      </span>
+                    </div>
+                  </template>
+
+                  <div v-if="!bounty.peg_to_usd && bounty.value_in_usdt_now" id="value_in_usdt_wrapper" class="tag usd ml-3 col-md-2" data-toggle="tooltip" data-html="true" :title='`<div class="tooltip-info">The funding in this bounty adds up to $${bounty.value_in_usdt_now} USD </div>`'>
                     <p class="inner-tooltip">
                       <span id="value_in_usdt">[[bounty.value_in_usdt_now]]</span>
                       <span>USD</span>
                     </p>
                   </div>
-                  <div class="w-100"></div>
-                  <div class="d-inline-flex justify-content-end">
-                    <span class="bounty-info-heading mr-1" data-toggle="tooltip" data-html="true" :title='`<div class="tooltip-info">This bounty is pegged to USD. The amount of tokens you receive will be approximately worth this amount at the time of payout.</div>`'>
-                      in [[bounty.token_name]] <i class="fas fa-info-circle"></i>
-                    </span>
-                  </div>
-                </template>
-
-                <div v-if="!bounty.peg_to_usd && bounty.value_in_usdt_now" id="value_in_usdt_wrapper" class="tag usd ml-3 col-md-2" data-toggle="tooltip" data-html="true" :title='`<div class="tooltip-info">The funding in this bounty adds up to $${bounty.value_in_usdt_now} USD </div>`'>
-                  <p class="inner-tooltip">
-                    <span id="value_in_usdt">[[bounty.value_in_usdt_now]]</span>
-                    <span>USD</span>
-                  </p>
                 </div>
               </div>
-            </div>
-            <div class="row" style="background-color: lightgoldenrodyellow; height: 20px;">
             </div>
             <div class="row">
               <div class="col-12" v-if="bounty.network.toLowerCase().indexOf('mainnet') < 0">
